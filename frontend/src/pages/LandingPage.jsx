@@ -61,11 +61,11 @@ const LandingPage = () => {
                                 {isDarkMode ? <Sun className="h-4 w-4 text-yellow-500" /> : <Moon className="h-4 w-4 text-slate-800" />}
                             </button>
                             <Link
-                                to="/dashboard"
+                                to="/login"
                                 className="bg-[#000080] dark:bg-blue-700 px-6 py-2 rounded-sm hover:brightness-110 transition-all shadow-md active:translate-y-0.5 font-black uppercase text-[11px] tracking-widest text-white leading-none flex items-center justify-center"
                                 style={{ color: 'white' }}
                             >
-                                ACCESS PORTAL
+                                LOGIN
                             </Link>
                         </div>
                     </div>

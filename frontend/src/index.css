@@ -10,12 +10,14 @@
   --ashoka: #000088;
 
   /* Theme Variables - Light Mode */
-  --bg-primary: #ffffff;
+  --bg-primary: #f8fafc;
   --bg-card: #ffffff;
+  --bg-navy-card: #000080;
   --text-primary: #0f172a;
   --text-secondary: #475569;
-  --border-color: #cbd5e1;
-  --bg-hover: #f8fafc;
+  --text-on-navy: #ffffff;
+  --border-color: #e2e8f0;
+  --bg-hover: #f1f5f9;
   --chakra-opacity: 0.04;
   --chakra-filter: invert(15%) sepia(95%) saturate(3000%) hue-rotate(200deg);
 
@@ -29,17 +31,19 @@
   /* Theme Variables - Dark Mode */
   --bg-primary: #020617;
   --bg-card: #0f172a;
+  --bg-navy-card: #0f172a;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
+  --text-on-navy: #f8fafc;
   --border-color: #1e293b;
   --bg-hover: #1e293b;
-  --chakra-opacity: 0.08;
+  --chakra-opacity: 0.1;
   --chakra-filter: brightness(2) saturate(0);
 
   /* Indian Theme Colors - Dark Mode Adjustments */
-  --saffron-text: #faa34d;
+  --saffron-text: #f97316;
   --green-text: #22c55e;
-  --navy-text: #f8fafc;
+  --navy-text: #38bdf8;
 }
 
 body {

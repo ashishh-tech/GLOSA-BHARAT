@@ -162,4 +162,39 @@ router.post('/user/sync-location', async (req, res) => {
     }
 });
 
+// [NEW] Bulk Route Advisory for Navigation
+router.post('/route-advisory', async (req, res) => {
+    try {
+        const { junctionIds } = req.body;
+        if (!junctionIds || !Array.isArray(junctionIds)) {
+            return res.status(400).json({ error: 'Array of junctionIds required' });
+        }
+
+        const adivsories = junctionIds.map(id => {
+            const cycleTime = 60;
+            const timeInCycle = (Date.now() / 1000) % cycleTime;
+
+            let status = 'GREEN';
+            let secondsToChange = 0;
+
+            if (timeInCycle < 25) {
+                status = 'GREEN';
+                secondsToChange = 25 - timeInCycle;
+            } else if (timeInCycle < 30) {
+                status = 'AMBER';
+                secondsToChange = 30 - timeInCycle;
+            } else {
+                status = 'RED';
+                secondsToChange = 60 - timeInCycle;
+            }
+
+            return { id, status, secondsToChange };
+        });
+
+        res.json(adivsories);
+    } catch (error) {
+        res.status(500).json({ error: 'Route advisory failed' });
+    }
+});
+
 module.exports = router;
