@@ -1,10 +1,21 @@
 import random
 import time
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
+import os
 
 app = FastAPI(title="GLOSA AI Prediction Service")
+
+# ─── CORS ───────────────────────────────────────────────────────────────────
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # In production, restrict this to frontend domains
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class PredictionRequest(BaseModel):
     junction_id: str
