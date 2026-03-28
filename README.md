@@ -80,7 +80,7 @@ To visualize the real-time traffic data in **MongoDB Compass**:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/sohansarkar07/GLOSA-BHARAT.git
+   git clone https://github.com/ashishh-tech/GLOSA-BHARAT.git
    cd GLOSA-BHARAT
    ```
 
