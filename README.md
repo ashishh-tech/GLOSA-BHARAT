@@ -10,8 +10,8 @@
 | Service | URL | Platform |
 |---------|-----|----------|
 | 🌐 Frontend | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
-| ⚙️ Backend API | `https://glosa-backend-xxxx-el.a.run.app` | Google Cloud Run |
-| 🤖 AI Service | `https://glosa-ai-xxxx-el.a.run.app` | Google Cloud Run |
+| ⚙️ Backend API | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
+| 🤖 AI Service | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
 
 > **Note**: Update the Cloud Run URLs above after first deployment.
 

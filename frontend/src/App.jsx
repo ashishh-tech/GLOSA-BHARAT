@@ -6,6 +6,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import MobileRiderView from './pages/MobileRiderView';
 import axios from 'axios';
+import CONFIG from './config';
+
+// ─── Point all relative /api/... calls at the Cloud Run backend ───────────
+axios.defaults.baseURL = CONFIG.BACKEND_URL;
 
 // Prevent HTML responses from Cloudflare Pages from crashing the app when APIs are unreachable
 axios.interceptors.response.use(
