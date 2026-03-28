@@ -4,53 +4,64 @@
  */
 
 function calculateAdvisory(distanceInMeters, secondsToChange, currentStatus) {
-    const minSpeed = 5; // m/s (~18 km/h)
-    const maxSpeed = 16; // m/s (~60 km/h)
-    const targetBuffer = 2; // seconds buffer to pass during green
+    const minSpeedMs = 5; // m/s (~18 km/h min)
+    const maxSpeedMs = 14; // m/s (~50 km/h urban cap)
+    const targetBuffer = 2; // seconds buffer
 
-    let recommendedSpeed = 0;
-    let message = "";
+    let recommendedSpeedMs = 0;
+    let message = '';
+    let actionSignal = currentStatus; // defaults to signal color
 
-    if (currentStatus === "GREEN") {
-        // Can we make it before it turns red?
-        const speedNeeded = distanceInMeters / (secondsToChange - targetBuffer);
-
-        if (speedNeeded <= maxSpeed) {
-            recommendedSpeed = Math.max(speedNeeded, minSpeed);
-            message = "Maintain speed to clear signal.";
+    if (currentStatus === 'GREEN') {
+        if (secondsToChange <= targetBuffer) {
+            // About to turn — slow down regardless
+            recommendedSpeedMs = minSpeedMs;
+            message = 'Signal changing soon. Reduce speed.';
+            actionSignal = 'AMBER';
         } else {
-            // Can't make it, slow down for next green
-            message = "Slow down. Signal turning Red soon.";
-            recommendedSpeed = minSpeed;
+            const speedNeeded = distanceInMeters / (secondsToChange - targetBuffer);
+            if (speedNeeded <= maxSpeedMs) {
+                recommendedSpeedMs = Math.max(speedNeeded, minSpeedMs);
+                message = 'Maintain speed to clear the signal.';
+                actionSignal = 'GREEN';
+            } else {
+                // Can't make it — advise slow for next green
+                recommendedSpeedMs = minSpeedMs;
+                message = 'Cannot clear signal in time. Slow down for next Green.';
+                actionSignal = 'AMBER';
+            }
         }
-    } else if (currentStatus === "RED") {
-        // Arrive just as it turns green
+    } else if (currentStatus === 'RED') {
         const speedNeeded = distanceInMeters / (secondsToChange + targetBuffer);
-
-        if (speedNeeded <= maxSpeed && speedNeeded >= minSpeed) {
-            recommendedSpeed = speedNeeded;
-            message = "Optimal speed to arrive at Green.";
-        } else if (speedNeeded < minSpeed) {
-            recommendedSpeed = minSpeed;
-            message = "Slow approach. Arrive after signal turns Green.";
+        if (speedNeeded <= maxSpeedMs && speedNeeded >= minSpeedMs) {
+            recommendedSpeedMs = speedNeeded;
+            message = 'Optimal speed — you will arrive on Green.';
+            actionSignal = 'GREEN';
+        } else if (speedNeeded < minSpeedMs) {
+            recommendedSpeedMs = minSpeedMs;
+            message = 'Slow approach. Signal turns Green soon.';
+            actionSignal = 'RED';
         } else {
-            recommendedSpeed = 0;
-            message = "Stop and wait for Green.";
+            recommendedSpeedMs = 0;
+            message = 'Stop ahead. Signal is Red.';
+            actionSignal = 'RED';
         }
     } else { // AMBER
-        recommendedSpeed = minSpeed;
-        message = "Prepare to stop.";
+        recommendedSpeedMs = minSpeedMs;
+        message = 'Prepare to stop for Red.';
+        actionSignal = 'AMBER';
     }
 
     return {
-        speedKmh: Math.round(recommendedSpeed * 3.6),
-        message: message
+        speedKmh: Math.round(recommendedSpeedMs * 3.6),
+        message,
+        actionSignal  // use this for UI color, not raw signalStatus
     };
 }
 
-// Simple Haversine for distance if needed (though dashboard sends dist for now)
+// Haversine distance formula
 function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371e3; // metres
+    const R = 6371e3;
     const φ1 = lat1 * Math.PI / 180;
     const φ2 = lat2 * Math.PI / 180;
     const Δφ = (lat2 - lat1) * Math.PI / 180;
@@ -61,7 +72,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
         Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // in metres
+    return R * c;
 }
 
 module.exports = { calculateAdvisory, getDistance };

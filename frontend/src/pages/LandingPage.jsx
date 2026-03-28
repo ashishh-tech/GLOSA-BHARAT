@@ -99,12 +99,6 @@ const LandingPage = () => {
                             <Link to="/dashboard" className="group bg-blue-600 text-white px-8 py-5 rounded-2xl text-lg font-bold shadow-2xl shadow-blue-200 hover:bg-blue-700 transition-all hover:-translate-y-1 flex items-center justify-center gap-3">
                                 Start Simulation <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                             </Link>
-                            <button
-                                onClick={() => setIsWhitepaperOpen(true)}
-                                className="bg-[var(--bg-card)] border-2 border-[var(--border-color)] text-[var(--text-primary)] px-8 py-5 rounded-2xl text-lg font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-3"
-                            >
-                                View Technical Docs
-                            </button>
                         </div>
 
                         <div className="flex items-center gap-12 opacity-40 grayscale dark:invert dark:opacity-60">

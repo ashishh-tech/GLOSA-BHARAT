@@ -3,7 +3,10 @@ import {
     LayoutDashboard,
     Route,
     BarChart3,
-    Settings
+    Settings,
+    Bus,
+    BarChart2,
+    GitMerge
 } from 'lucide-react';
 
 const Sidebar = ({ isConnected, activeTab, setActiveTab, user }) => {
@@ -11,6 +14,9 @@ const Sidebar = ({ isConnected, activeTab, setActiveTab, user }) => {
         { icon: LayoutDashboard, label: 'Control Center', id: 'dashboard' },
         { icon: Route, label: 'AI Advisory', id: 'simulation' },
         { icon: BarChart3, label: 'System Metrics', id: 'metrics' },
+        { icon: Bus, label: 'Transit Intelligence', id: 'public-transport' },
+        { icon: BarChart2, label: 'Demand Analysis', id: 'demand' },
+        { icon: GitMerge, label: 'Multimodal Planner', id: 'multimodal' },
         { icon: Settings, label: 'Terminal Settings', id: 'settings' },
     ];
 

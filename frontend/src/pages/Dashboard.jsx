@@ -23,9 +23,20 @@ import {
     UserCircle,
     Search,
     Navigation,
-    Compass
+    Compass,
+    Bus,
+    BarChart2,
+    GitMerge,
+    Footprints,
+    Train,
+    Leaf,
+    Flame,
+    Activity,
+    ArrowRight,
+    ShieldCheck
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import MapComponent from '../components/MapComponent';
 
@@ -80,9 +91,22 @@ const Dashboard = () => {
     const [mockPosition, setMockPosition] = useState({ lat: 28.6140, lng: 77.2185 });
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isDarkMode, setIsDarkMode] = useState(() => {
-        return document.documentElement.classList.contains('dark') ||
-            window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // Default to dark mode for the demo — looks far more impressive
+        const saved = localStorage.getItem('glosa-dark');
+        if (saved !== null) return saved === 'true';
+        return true; // dark by default
     });
+    // New feature state
+    const [transitData, setTransitData] = useState(null);
+    const [demandData, setDemandData] = useState(null);
+    const [multimodalData, setMultimodalData] = useState(null);
+    const [selectedJourney, setSelectedJourney] = useState(0);
+    const [toast, setToast] = useState(null); // { msg, type: 'success'|'error' }
+
+    const showToast = (msg, type = 'success') => {
+        setToast({ msg, type });
+        setTimeout(() => setToast(null), 4500);
+    };
 
     // Sync user to backend when authenticated
     useEffect(() => {
@@ -102,6 +126,7 @@ const Dashboard = () => {
         } else {
             document.documentElement.classList.remove('dark');
         }
+        localStorage.setItem('glosa-dark', String(isDarkMode));
     }, [isDarkMode]);
 
     // Periodic Location & Route junction Status Sync (only if user is logged in)
@@ -121,7 +146,7 @@ const Dashboard = () => {
                             lat: latitude,
                             lng: longitude
                         });
-                    } catch (err) { console.error("Sync failed", err); }
+                    } catch (_) { /* silent — non-critical location sync */ }
 
                     // If routing, update the status of junctions on the route
                     if (routeInfo.junctions.length > 0) {
@@ -160,7 +185,7 @@ const Dashboard = () => {
                                     distance: activeJ.distance
                                 });
                             }
-                        } catch (err) { console.error("Route status update failed", err); }
+                        } catch (_) { /* silent — route advisory is non-critical */ }
                     }
                 });
             }
@@ -182,23 +207,24 @@ const Dashboard = () => {
                 const res = await axios.get('/api/junctions');
                 setJunctions(res.data);
                 if (res.data.length > 0) setSelectedJunction(res.data[0]);
-            } catch (err) {
-                console.error("Error fetching junctions", err);
-                setIsConnected(false);
+            } catch (_) {
+                setIsConnected(false); // silent — backend may not be running yet
             }
         };
         fetchJunctions();
     }, []);
 
     useEffect(() => {
+        let failCount = 0;
         const fetchStats = async () => {
             try {
                 const res = await axios.get('/api/stats');
                 setStats(res.data);
                 setIsConnected(true);
-            } catch (err) {
-                console.error("Error fetching stats", err);
-                setIsConnected(false);
+                failCount = 0;
+            } catch (_) {
+                failCount++;
+                if (failCount >= 3) setIsConnected(false);
             }
         };
         fetchStats();
@@ -207,15 +233,39 @@ const Dashboard = () => {
     }, []);
 
     useEffect(() => {
+        const fetchNewFeatures = async () => {
+            try {
+                const startName = routeInfo.start?.name || 'Your Location';
+                const destName = routeInfo.destination?.name || 'Destination';
+
+                const [tRes, dRes, mRes] = await Promise.all([
+                    axios.get(`/api/transit?start=${encodeURIComponent(startName)}&dest=${encodeURIComponent(destName)}`),
+                    axios.get(`/api/demand?loc=${encodeURIComponent(startName)}`),
+                    axios.get(`/api/multimodal?start=${encodeURIComponent(startName)}&dest=${encodeURIComponent(destName)}`)
+                ]);
+                setTransitData(tRes.data);
+                setDemandData(dRes.data);
+                setMultimodalData(mRes.data);
+            } catch (_) {
+                // silent — transit/demand/multimodal data is non-critical, backend may be starting
+            }
+        };
+        fetchNewFeatures();
+        const interval = setInterval(fetchNewFeatures, 60000); // 60s — 3 concurrent calls, be gentle
+        return () => clearInterval(interval);
+    }, [routeInfo.start?.name, routeInfo.destination?.name, activeTab]);
+
+    // Advisory polling — every 5s from server, smooth local countdown in between
+    useEffect(() => {
         if (!selectedJunction) return;
 
-        const interval = setInterval(async () => {
+        const poll = async () => {
             try {
-                setMockPosition(prev => {
-                    const newLat = prev.lat + (selectedJunction.lat - prev.lat) * 0.05;
-                    const newLng = prev.lng + (selectedJunction.lng - prev.lng) * 0.05;
-                    return { lat: newLat, lng: newLng };
-                });
+                // Move mock vehicle toward junction on each poll
+                setMockPosition(prev => ({
+                    lat: prev.lat + (selectedJunction.lat - prev.lat) * 0.05,
+                    lng: prev.lng + (selectedJunction.lng - prev.lng) * 0.05
+                }));
 
                 const res = await axios.post('/api/advisory', {
                     junctionId: selectedJunction.id,
@@ -223,14 +273,31 @@ const Dashboard = () => {
                     lng: mockPosition.lng,
                     timestamp: Date.now() / 1000
                 });
-                setAdvisory(res.data);
-            } catch (err) {
-                console.error("Error fetching advisory", err);
+                // Only update if we got a valid response
+                if (res.data && res.data.secondsToChange !== undefined) {
+                    setAdvisory(res.data);
+                }
+            } catch (_) {
+                // silent — AI advisory may be temporarily unavailable
             }
-        }, 1500);
+        };
 
-        return () => clearInterval(interval);
-    }, [selectedJunction, mockPosition]);
+        poll(); // immediate first call
+        const pollInterval = setInterval(poll, 5000); // poll every 5s
+        return () => clearInterval(pollInterval);
+    }, [selectedJunction]); // ⚠️ intentionally omit mockPosition to avoid restart loop
+
+    // Smooth local countdown — tick secondsToChange down every second between polls
+    useEffect(() => {
+        const tick = setInterval(() => {
+            setAdvisory(prev => {
+                if (!prev || prev.secondsToChange === undefined) return prev;
+                const next = Math.max(0, prev.secondsToChange - 1);
+                return { ...prev, secondsToChange: next };
+            });
+        }, 1000);
+        return () => clearInterval(tick);
+    }, []);
 
     const statusMap = {
         'online': 'status-online',
@@ -324,54 +391,115 @@ const Dashboard = () => {
 
         setIsRouting(true);
         try {
-            // 1. Geocode Start
+            // ── Step 1: Geocode Start ──────────────────────────────────────
             let startCoords = mockPosition;
-            let startName = "Your location";
+            let startName = startQuery !== 'Your location' && startQuery.trim() !== ''
+                ? startQuery.trim()
+                : 'Your Location';
 
             if (startQuery !== 'Your location' && startQuery.trim() !== '') {
-                const startRes = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(startQuery)}`);
-                if (startRes.data.length === 0) throw new Error("Starting point not found");
-                startCoords = { lat: parseFloat(startRes.data[0].lat), lng: parseFloat(startRes.data[0].lon) };
-                startName = startRes.data[0].display_name;
+                const startRes = await axios.get(
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(startQuery)}&limit=1&accept-language=en`
+                );
+                if (startRes.data.length > 0) {
+                    startCoords = { lat: parseFloat(startRes.data[0].lat), lng: parseFloat(startRes.data[0].lon) };
+                    startName = startRes.data[0].display_name;
+                } else {
+                    throw new Error(`"${startQuery}" not found — try a city/district name`);
+                }
             }
 
-            // 2. Geocode Destination
-            const geoRes = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinationQuery)}`);
-            if (geoRes.data.length === 0) throw new Error("Destination not found");
+            // ── Step 2: Geocode Destination ───────────────────────────────
+            const geoRes = await axios.get(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destinationQuery)}&limit=1&accept-language=en`
+            );
+            if (geoRes.data.length === 0) throw new Error(`"${destinationQuery}" not found — try a city/district name`);
             const dest = geoRes.data[0];
             const destCoords = { lat: parseFloat(dest.lat), lng: parseFloat(dest.lon), name: dest.display_name };
 
-            // 2. Get Route from OSRM
-            const start = startCoords;
-            const routeRes = await axios.get(`https://router.project-osrm.org/route/v1/driving/${start.lng},${start.lat};${destCoords.lng},${destCoords.lat}?overview=full&geometries=geojson`);
-
-            if (!routeRes.data.routes || routeRes.data.routes.length === 0) throw new Error("No route found");
-
-            const path = routeRes.data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-
-            // 3. Find Signal Junctions along the path
-            // We'll filter existing junctions that are within 100m of any point on the path
-            const routeJunctions = junctions.filter(j => {
-                return path.some(p => {
-                    const dist = Math.sqrt(Math.pow(p[0] - j.lat, 2) + Math.pow(p[1] - j.lng, 2));
-                    return dist < 0.001; // Roughly 100m
-                });
-            });
-
-            setRouteInfo({
-                path,
-                junctions: routeJunctions.map(j => ({ ...j, status: 'IDLE' })),
+            // ── Step 3: IMMEDIATELY update routeInfo with locations ───────
+            // This triggers the multimodal/demand refetch regardless of routing success
+            setRouteInfo(prev => ({
+                ...prev,
                 start: { ...startCoords, name: startName },
                 destination: destCoords
-            });
+            }));
 
-            if (routeJunctions.length > 0) {
-                setSelectedJunction(routeJunctions[0]);
+            // ── Step 4: Try OSRM routing (non-blocking on failure) ────────
+            let routeSuccess = false;
+            try {
+                const routeRes = await axios.get(
+                    `https://router.project-osrm.org/route/v1/driving/${startCoords.lng},${startCoords.lat};${destCoords.lng},${destCoords.lat}?overview=full&geometries=geojson`
+                );
+
+                if (routeRes.data.routes && routeRes.data.routes.length > 0) {
+                    const path = routeRes.data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    const routeJunctions = junctions.filter(j =>
+                        path.some(p => Math.sqrt(Math.pow(p[0] - j.lat, 2) + Math.pow(p[1] - j.lng, 2)) < 0.001)
+                    );
+
+                    setRouteInfo(prev => ({
+                        ...prev,
+                        path,
+                        junctions: routeJunctions.map(j => ({ ...j, status: 'IDLE' })),
+                    }));
+
+                    if (routeJunctions.length > 0) setSelectedJunction(routeJunctions[0]);
+                    routeSuccess = true;
+                }
+            } catch (_) {
+                // OSRM unavailable — locations are already set above, multimodal tabs will still work
             }
 
-            alert(`🚀 Route Optimized! Found ${routeJunctions.length} smart signals on your path.`);
+            const shortStart = startName.split(',')[0];
+            const shortDest = destCoords.name.split(',')[0];
+            showToast(
+                routeSuccess
+                    ? `🚀 Route: ${shortStart} → ${shortDest}`
+                    : `📍 Locations set: ${shortStart} → ${shortDest}`
+            );
         } catch (err) {
-            alert("Routing error: " + err.message);
+            showToast('⚠️ ' + err.message, 'error');
+        } finally {
+            setIsRouting(false);
+        }
+    };
+
+    // Quick demo routes — one-click fills and submits the routing form
+    const DEMO_ROUTES = [
+        { label: '🏛️ India Gate → CP', start: 'India Gate, New Delhi', dest: 'Connaught Place, New Delhi' },
+        { label: '🚉 Howrah Station → Park Street', start: 'Howrah Station, Kolkata', dest: 'Park Street, Kolkata' },
+        { label: '✈️ BKC → CSIA Mumbai', start: 'Bandra Kurla Complex, Mumbai', dest: 'Chhatrapati Shivaji Maharaj International Airport, Mumbai' },
+    ];
+
+    const runDemoRoute = async (route) => {
+        setStartQuery(route.start);
+        setDestinationQuery(route.dest);
+        // Trigger geocode + route immediately
+        setIsRouting(true);
+        try {
+            const [sRes, dRes] = await Promise.all([
+                axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(route.start)}&limit=1&accept-language=en`),
+                axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(route.dest)}&limit=1&accept-language=en`)
+            ]);
+            if (!sRes.data.length || !dRes.data.length) { showToast('Could not geocode demo route', 'error'); return; }
+            const startCoords = { lat: parseFloat(sRes.data[0].lat), lng: parseFloat(sRes.data[0].lon) };
+            const destCoords = { lat: parseFloat(dRes.data[0].lat), lng: parseFloat(dRes.data[0].lon), name: dRes.data[0].display_name };
+            setRouteInfo(prev => ({ ...prev, start: { ...startCoords, name: sRes.data[0].display_name }, destination: destCoords }));
+            setMockPosition(startCoords);
+            // Try OSRM
+            try {
+                const routeRes = await axios.get(`https://router.project-osrm.org/route/v1/driving/${startCoords.lng},${startCoords.lat};${destCoords.lng},${destCoords.lat}?overview=full&geometries=geojson`);
+                if (routeRes.data.routes?.length) {
+                    const path = routeRes.data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    const routeJunctions = junctions.filter(j => path.some(p => Math.sqrt(Math.pow(p[0] - j.lat, 2) + Math.pow(p[1] - j.lng, 2)) < 0.001));
+                    setRouteInfo(prev => ({ ...prev, path, junctions: routeJunctions.map(j => ({ ...j, status: 'IDLE' })) }));
+                    if (routeJunctions.length > 0) setSelectedJunction(routeJunctions[0]);
+                }
+            } catch (_) { /* OSRM unavailable */ }
+            showToast(`✅ Demo route loaded: ${route.label}`);
+        } catch (err) {
+            showToast('⚠️ Demo route failed', 'error');
         } finally {
             setIsRouting(false);
         }
@@ -427,6 +555,20 @@ const Dashboard = () => {
                                         </button>
                                     </div>
                                 </div>
+                                {/* Quick Demo Route Chips */}
+                                <div className="flex flex-wrap gap-1.5 mt-1.5 px-1">
+                                    {DEMO_ROUTES.map((r, i) => (
+                                        <button
+                                            key={i}
+                                            type="button"
+                                            onClick={() => runDemoRoute(r)}
+                                            disabled={isRouting}
+                                            className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-blue-500/10 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400 border border-blue-300/30 hover:bg-blue-500/20 transition-all disabled:opacity-50"
+                                        >
+                                            {r.label}
+                                        </button>
+                                    ))}
+                                </div>
                             </form>
                         </div>
 
@@ -466,7 +608,18 @@ const Dashboard = () => {
                                 <span className="hidden sm:inline">Sign Out</span>
                             </button>
                         </div>
-                    </header >
+                    </header>
+
+                    {/* Toast Notification */}
+                    {toast && (
+                        <div className={`fixed top-5 right-5 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-2xl border text-sm font-bold transition-all animate-in slide-in-from-right-4 duration-300 ${toast.type === 'error'
+                            ? 'bg-red-600 text-white border-red-500'
+                            : 'bg-emerald-600 text-white border-emerald-500'
+                            }`}>
+                            <span>{toast.msg}</span>
+                            <button onClick={() => setToast(null)} className="opacity-70 hover:opacity-100 ml-2 text-lg leading-none">&times;</button>
+                        </div>
+                    )}
 
                     {/* Core System Status */}
                     < section className="mb-10" >
@@ -593,6 +746,10 @@ const Dashboard = () => {
                                 vehiclePosition={mockPosition}
                                 distance={advisory?.distance || 500}
                                 signalStatus={advisory?.signalStatus || 'IDLE'}
+                                routePath={routeInfo.path}
+                                routeJunctions={routeInfo.junctions}
+                                start={routeInfo.start}
+                                destination={routeInfo.destination}
                             />
                         </div>
                         <div className="space-y-6">
@@ -737,6 +894,380 @@ const Dashboard = () => {
             );
         }
 
+        // ── Transit Intelligence Tab ────────────────────────────────────────
+        if (activeTab === 'public-transport') {
+            const routes = transitData?.routes || [];
+            const tsp = transitData?.tspStats || {};
+            const modeColor = { bus: 'text-orange-500', metro: 'text-blue-500' };
+            const modeBg = { bus: 'bg-orange-500/10 border-orange-500/20', metro: 'bg-blue-500/10 border-blue-500/20' };
+            const occupancyColor = (o, cap) => {
+                const pct = (o / cap) * 100;
+                if (pct > 85) return 'bg-red-500';
+                if (pct > 60) return 'bg-amber-500';
+                return 'bg-green-500';
+            };
+            return (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <header className="mb-8">
+                        <div className="flex items-center gap-3 mb-1">
+                            <Bus className="h-8 w-8 text-orange-500" />
+                            <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Transit Intelligence Hub</h1>
+                        </div>
+                        <p className="text-[var(--text-secondary)] font-bold text-sm uppercase tracking-wider">Public Transport Monitoring &amp; Transit Signal Priority (TSP)</p>
+                    </header>
+
+                    {/* TSP Stats Row */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        {[
+                            { label: 'Active TSP Grants', value: tsp.activeGrants || 3, icon: ShieldCheck, color: 'text-green-500' },
+                            { label: 'Avg Time Saved', value: tsp.timeSavedToday || '14.2 min', icon: Clock, color: 'text-blue-500' },
+                            { label: 'Routes Optimized', value: tsp.routesOptimized || 8, icon: Route, color: 'text-violet-500' },
+                            { label: 'On-Time Improvement', value: tsp.onTimeImprovement || '+22%', icon: TrendingUp, color: 'text-emerald-500' },
+                        ].map((m, i) => (
+                            <div key={i} className="gov-card flex items-center gap-4">
+                                <div className="bg-slate-100 dark:bg-white/5 p-3 rounded-xl">
+                                    <m.icon className={`h-6 w-6 ${m.color}`} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{m.label}</p>
+                                    <p className="text-xl font-black text-[var(--text-primary)]">{m.value}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Route Cards */}
+                    <div className="space-y-4">
+                        <h2 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Live Route Status</h2>
+                        {routes.map((route, i) => {
+                            const pct = Math.round((route.occupancy / route.capacity) * 100);
+                            return (
+                                <div key={i} className={`gov-card border ${route.tspActive ? 'border-green-500/30 bg-green-500/5' : ''}`}>
+                                    <div className="flex flex-col md:flex-row md:items-center gap-4">
+                                        <div className="flex items-center gap-4 flex-1">
+                                            <div className={`p-3 rounded-xl border ${modeBg[route.type] || 'bg-slate-100'}`}>
+                                                {route.type === 'bus'
+                                                    ? <Bus className={`h-6 w-6 ${modeColor[route.type]}`} />
+                                                    : <Train className={`h-6 w-6 ${modeColor[route.type]}`} />}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 mb-0.5">
+                                                    <p className="text-xs font-black text-[var(--text-primary)] truncate">{route.name}</p>
+                                                    {route.tspActive && (
+                                                        <span className="flex items-center gap-1 bg-green-500/10 text-green-600 border border-green-500/20 text-[9px] font-black uppercase px-2 py-0.5 rounded-full whitespace-nowrap">
+                                                            <ShieldCheck className="h-3 w-3" /> TSP Active
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[10px] text-[var(--text-secondary)] font-bold uppercase">
+                                                    <span>{route.stops} stops</span>
+                                                    <span>•</span>
+                                                    <span>{route.km} km</span>
+                                                    <span>•</span>
+                                                    <span className={route.status === 'on-time' ? 'text-green-600' : 'text-red-500'}>
+                                                        {route.status === 'on-time' ? '✓ On Time' : `⚠ +${route.delay} min delay`}
+                                                    </span>
+                                                </div>
+                                                <div className="mt-2">
+                                                    <div className="flex justify-between text-[10px] font-bold text-[var(--text-secondary)] mb-1">
+                                                        <span>Occupancy</span>
+                                                        <span>{route.occupancy}/{route.capacity} ({pct}%)</span>
+                                                    </div>
+                                                    <div className="h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                                                        <div
+                                                            className={`h-full rounded-full transition-all ${occupancyColor(route.occupancy, route.capacity)}`}
+                                                            style={{ width: `${pct}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-4 text-center shrink-0">
+                                            <div>
+                                                <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase">Next Arrivals</p>
+                                                <p className="text-sm font-black text-[var(--text-primary)]">{(route.nextArrivals || []).map(n => `${n}m`).join(' · ')}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase">CO₂ Saved</p>
+                                                <p className="text-sm font-black text-emerald-500">{route.co2Saved}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Commuter Demand Analysis Tab ────────────────────────────────────
+        if (activeTab === 'demand') {
+            const FALLBACK_GRID = [
+                { hour: '00:00', demand: 12, mode: 'low' }, { hour: '01:00', demand: 8, mode: 'low' },
+                { hour: '02:00', demand: 6, mode: 'low' }, { hour: '03:00', demand: 5, mode: 'low' },
+                { hour: '04:00', demand: 9, mode: 'low' }, { hour: '05:00', demand: 22, mode: 'low' },
+                { hour: '06:00', demand: 48, mode: 'medium' }, { hour: '07:00', demand: 72, mode: 'high' },
+                { hour: '08:00', demand: 91, mode: 'peak' }, { hour: '09:00', demand: 98, mode: 'peak' },
+                { hour: '10:00', demand: 82, mode: 'high' }, { hour: '11:00', demand: 68, mode: 'high' },
+                { hour: '12:00', demand: 61, mode: 'medium' }, { hour: '13:00', demand: 58, mode: 'medium' },
+                { hour: '14:00', demand: 55, mode: 'medium' }, { hour: '15:00', demand: 60, mode: 'medium' },
+                { hour: '16:00', demand: 74, mode: 'high' }, { hour: '17:00', demand: 88, mode: 'peak' },
+                { hour: '18:00', demand: 96, mode: 'peak' }, { hour: '19:00', demand: 93, mode: 'peak' },
+                { hour: '20:00', demand: 79, mode: 'high' }, { hour: '21:00', demand: 55, mode: 'medium' },
+                { hour: '22:00', demand: 34, mode: 'low' }, { hour: '23:00', demand: 18, mode: 'low' },
+            ];
+            const grid = (demandData?.demandGrid?.length > 0) ? demandData.demandGrid : FALLBACK_GRID;
+            const hotspots = demandData?.hotspots || [];
+            const forecast = demandData?.forecast || {};
+            const summary = demandData?.summary || {};
+            const modeSplit = summary.modeSplit || { bus: 28, metro: 42, auto: 18, walk: 12 };
+            const demandColor = { peak: 'bg-red-500', high: 'bg-orange-500', medium: 'bg-amber-400', low: 'bg-green-500' };
+            const trendIcon = { rising: '↑', stable: '→', falling: '↓' };
+            const trendColor = { rising: 'text-red-500', stable: 'text-amber-500', falling: 'text-green-500' };
+
+
+            return (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <header className="mb-8">
+                        <div className="flex items-center gap-3 mb-1">
+                            <BarChart2 className="h-8 w-8 text-violet-500" />
+                            <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Commuter Demand Analysis</h1>
+                        </div>
+                        <p className="text-[var(--text-secondary)] font-bold text-sm uppercase tracking-wider">Traffic Pattern Analysis &amp; AI-Powered Demand Forecasting</p>
+                    </header>
+
+                    {/* Summary KPIs */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[
+                            { label: 'Total Commuters Today', value: summary.totalCommutersToday || '2.4M', icon: Users, color: 'text-blue-500' },
+                            { label: 'Peak Hour Load', value: summary.peakHourLoad || '98%', icon: Activity, color: 'text-red-500' },
+                            { label: 'Avg Wait Time', value: summary.avgWaitTime || '6.2 min', icon: Clock, color: 'text-amber-500' },
+                            { label: 'AI Forecast', value: `${forecast.nextHour?.demand || 91}%`, icon: Brain, color: 'text-violet-500' },
+                        ].map((m, i) => (
+                            <div key={i} className="gov-card flex items-center gap-4">
+                                <div className="bg-slate-100 dark:bg-white/5 p-3 rounded-xl">
+                                    <m.icon className={`h-6 w-6 ${m.color}`} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{m.label}</p>
+                                    <p className="text-xl font-black text-[var(--text-primary)]">{m.value}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Demand Heatmap */}
+                        <div className="lg:col-span-2 gov-card">
+                            <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] mb-6">Hourly Demand Heatmap</h3>
+                            <div className="flex items-end gap-1.5" style={{ height: '160px' }}>
+                                {grid.map((slot, i) => (
+                                    <div key={i} className="flex-1 flex flex-col items-end justify-end">
+                                        <div
+                                            className={`w-full rounded-t-sm ${demandColor[slot.mode] || 'bg-slate-400'} transition-all`}
+                                            style={{ height: `${Math.round(slot.demand * 1.4)}px`, minHeight: '4px' }}
+                                            title={`${slot.hour}: ${slot.demand}% demand`}
+                                        />
+                                        <p className="text-[8px] font-black text-[var(--text-secondary)] mt-1">{slot.hour.split(':')[0]}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="flex gap-4 mt-4">
+                                {[['peak', 'bg-red-500'], ['high', 'bg-orange-500'], ['medium', 'bg-amber-400'], ['low', 'bg-green-500']].map(([l, c]) => (
+                                    <div key={l} className="flex items-center gap-1.5">
+                                        <div className={`w-3 h-3 rounded-sm ${c}`} />
+                                        <span className="text-[10px] font-black text-[var(--text-secondary)] uppercase">{l}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Mode Split + Forecast */}
+                        <div className="space-y-6">
+                            <div className="gov-card">
+                                <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] mb-4">Mode Split</h3>
+                                {Object.entries(modeSplit).map(([mode, pct]) => (
+                                    <div key={mode} className="mb-3">
+                                        <div className="flex justify-between text-[10px] font-black uppercase mb-1">
+                                            <span className="text-[var(--text-primary)] capitalize">{mode}</span>
+                                            <span className="text-[var(--text-secondary)]">{pct}%</span>
+                                        </div>
+                                        <div className="h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                                            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="gov-card border-l-4 border-amber-500 bg-amber-500/5">
+                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-wider mb-2">AI Forecast — Next Hour</p>
+                                <p className="text-2xl font-black text-[var(--text-primary)] mb-1">{forecast.nextHour?.demand || 91}% Load</p>
+                                <p className="text-xs text-[var(--text-secondary)] font-bold mb-3">{forecast.nextHour?.label}</p>
+                                <div className="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
+                                    <p className="text-[10px] font-black text-violet-500 uppercase mb-1">AI Recommendation</p>
+                                    <p className="text-xs text-[var(--text-primary)] leading-relaxed">{forecast.recommendation}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Congestion Hotspots */}
+                    <div>
+                        <h2 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] mb-4">Congestion Hotspots</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {hotspots.map((h, i) => (
+                                <div key={i} className="gov-card flex items-center gap-4">
+                                    <div className="relative w-14 h-14 shrink-0">
+                                        <svg className="w-14 h-14 -rotate-90">
+                                            <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="4" />
+                                            <circle cx="28" cy="28" r="24" fill="none" stroke={h.congestion > 85 ? '#ef4444' : h.congestion > 65 ? '#f97316' : '#22c55e'} strokeWidth="4" strokeDasharray={`${h.congestion * 1.508} 150.8`} strokeLinecap="round" />
+                                        </svg>
+                                        <p className="absolute inset-0 flex items-center justify-center text-[11px] font-black text-[var(--text-primary)]">{h.congestion}%</p>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-black text-[var(--text-primary)] truncate">{h.name}</p>
+                                        <p className={`text-[10px] font-black uppercase mt-1 ${trendColor[h.trend]}`}>{trendIcon[h.trend]} {h.trend}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Multimodal Connectivity Planner Tab ─────────────────────────────
+        if (activeTab === 'multimodal') {
+            const startName = routeInfo.start?.name ? routeInfo.start.name.split(',')[0] : 'Current Location';
+            const destName = routeInfo.destination?.name ? routeInfo.destination.name.split(',')[0] : 'Destination';
+
+            const journeys = multimodalData?.journeys || [
+                {
+                    id: 'mock-1', label: 'Eco-Fastest (Metro + Walk)', recommended: true,
+                    totalTime: '38 mins', totalDistance: '14.2 km', cost: '₹40', emissions: '-42% CO2',
+                    legs: [
+                        { mode: 'walk', from: startName, to: 'Central Transit Hub', duration: '5 mins', distance: '400m' },
+                        { mode: 'metro', line: 'Rapid Line', from: 'Central Transit Hub', to: 'City Center', duration: '28 mins', distance: '13 km' },
+                        { mode: 'walk', from: 'City Center', to: destName, duration: '5 mins', distance: '400m' }
+                    ]
+                },
+                {
+                    id: 'mock-2', label: 'Direct Bus (GLOSA Optimized)', recommended: false,
+                    totalTime: '45 mins', totalDistance: '12 km', cost: '₹25', emissions: '-15% CO2',
+                    legs: [
+                        { mode: 'walk', from: startName, to: 'Bus Terminal A', duration: '3 mins', distance: '200m' },
+                        { mode: 'bus', route: 'Express-7', from: 'Bus Terminal A', to: 'Bus Terminal B', duration: '40 mins', distance: '11.5 km', glosaAdvisory: { recommendedSpeed: 35, junctionsAhead: 6, signalStatus: 'GREEN' } },
+                        { mode: 'walk', from: 'Bus Terminal B', to: destName, duration: '2 mins', distance: '150m' }
+                    ]
+                }
+            ];
+            const modeIcon = { walk: '🚶', bus: '🚌', metro: '🚇' };
+            const modePill = {
+                walk: 'bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300',
+                bus: 'bg-orange-500/10 text-orange-600 border border-orange-500/20',
+                metro: 'bg-blue-500/10 text-blue-600 border border-blue-500/20',
+            };
+            const signalBg = { GREEN: 'bg-green-600', AMBER: 'bg-amber-500', RED: 'bg-red-600' };
+
+            return (
+                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <header className="mb-8">
+                        <div className="flex items-center gap-3 mb-1">
+                            <GitMerge className="h-8 w-8 text-cyan-500" />
+                            <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Multimodal Connectivity Planner</h1>
+                        </div>
+                        <p className="text-[var(--text-secondary)] font-bold text-sm uppercase tracking-wider">Smart Journey Planning — Walk · Bus · Metro · GLOSA Signal Advisory</p>
+                    </header>
+
+                    {/* Journey selector */}
+                    <div className="flex gap-3 flex-wrap">
+                        {journeys.map((j, i) => (
+                            <button
+                                key={j.id}
+                                onClick={() => setSelectedJourney(i)}
+                                className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all border-2 ${selectedJourney === i
+                                    ? 'bg-cyan-600 text-white border-cyan-600 shadow-lg'
+                                    : 'border-slate-200 dark:border-slate-700 text-[var(--text-secondary)] hover:border-cyan-500 hover:text-cyan-600'
+                                    } ${j.recommended ? 'ring-2 ring-offset-2 ring-cyan-400' : ''}`}
+                            >
+                                {j.recommended && <span className="mr-1">⭐</span>}{j.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {journeys[selectedJourney] && (() => {
+                        const j = journeys[selectedJourney];
+                        return (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                {/* Journey Summary Card */}
+                                <div className="gov-card border-t-4 border-t-cyan-500 flex flex-col gap-4">
+                                    <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Journey Summary</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {[
+                                            { label: 'Total Time', value: j.totalTime, icon: Clock },
+                                            { label: 'Distance', value: j.totalDistance, icon: Route },
+                                            { label: 'Est. Cost', value: j.cost, icon: TrendingUp },
+                                            { label: 'Emissions', value: j.emissions, icon: Leaf },
+                                        ].map((m, i) => (
+                                            <div key={i} className="bg-slate-50 dark:bg-white/5 p-3 rounded-xl">
+                                                <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase mb-0.5">{m.label}</p>
+                                                <p className="text-sm font-black text-[var(--text-primary)]">{m.value}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {j.recommended && (
+                                        <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3 flex items-center gap-2">
+                                            <ShieldCheck className="h-4 w-4 text-cyan-500 shrink-0" />
+                                            <p className="text-[10px] font-black text-cyan-600 uppercase">AI Recommended Route</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Journey Legs */}
+                                <div className="lg:col-span-2 space-y-3">
+                                    <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em]">Journey Legs</h3>
+                                    {j.legs.map((leg, li) => (
+                                        <div key={li} className="gov-card flex gap-4 items-start">
+                                            <div className="flex flex-col items-center">
+                                                <span className="text-2xl">{modeIcon[leg.mode] || '📍'}</span>
+                                                {li < j.legs.length - 1 && <div className="w-0.5 h-8 bg-slate-200 dark:bg-slate-700 my-1" />}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 flex-wrap mb-1">
+                                                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${modePill[leg.mode]}`}>{leg.mode}</span>
+                                                    {leg.line && <span className="text-[10px] font-bold text-[var(--text-secondary)]">{leg.line}</span>}
+                                                    {leg.route && <span className="text-[10px] font-bold text-orange-600">Route {leg.route}</span>}
+                                                </div>
+                                                <p className="text-xs font-black text-[var(--text-primary)]">{leg.from} <ArrowRight className="h-3 w-3 inline" /> {leg.to}</p>
+                                                <p className="text-[10px] text-[var(--text-secondary)] font-bold mt-0.5">{leg.duration} · {leg.distance}</p>
+
+                                                {/* GLOSA Advisory inline for road legs */}
+                                                {leg.glosaAdvisory && (
+                                                    <div className="mt-2 flex items-center gap-3 bg-slate-50 dark:bg-white/5 p-2.5 rounded-lg border border-slate-100 dark:border-white/5">
+                                                        <div className={`w-8 h-8 rounded-full ${signalBg[leg.glosaAdvisory.signalStatus] || 'bg-amber-500'} flex items-center justify-center`}>
+                                                            <Zap className="h-4 w-4 text-white" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase">GLOSA Advisory</p>
+                                                            <p className="text-xs font-black text-[var(--text-primary)]">{leg.glosaAdvisory.recommendedSpeed} km/h · {leg.glosaAdvisory.junctionsAhead} signals ahead</p>
+                                                        </div>
+                                                        <span className={`ml-auto text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${leg.glosaAdvisory.signalStatus === 'GREEN' ? 'bg-green-100 text-green-700' :
+                                                            leg.glosaAdvisory.signalStatus === 'AMBER' ? 'bg-amber-100 text-amber-700' :
+                                                                'bg-red-100 text-red-700'
+                                                            }`}>{leg.glosaAdvisory.signalStatus}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </div>
+            );
+        }
+
         if (activeTab === 'settings') {
             return (
                 <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 dark:text-white">
@@ -866,12 +1397,25 @@ const Dashboard = () => {
 
             {isLoggedIn && (
                 <>
-                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} user={user} />
+                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} user={user} isConnected={isConnected} />
                     <main className="flex-1 p-8 h-screen overflow-y-auto scrollbar-hide min-w-0">
                         <div className="max-w-7xl mx-auto">
                             {renderContent()}
                         </div>
                     </main>
+                    {/* Floating Rider Mode Button */}
+                    <Link
+                        to="/rider"
+                        className="fixed bottom-6 right-6 z-[9998] flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-2xl font-black text-sm text-white transition-all hover:scale-105 active:scale-95 border border-white/10"
+                        style={{
+                            background: 'linear-gradient(135deg, #FF9933 0%, #1a237e 100%)',
+                            boxShadow: '0 8px 32px rgba(255,153,51,0.35), 0 2px 8px rgba(0,0,0,0.4)'
+                        }}
+                        title="Open Rider Mode (Two-Wheeler Optimized View)"
+                    >
+                        <span style={{ fontSize: 18 }}>🏍️</span>
+                        <span className="hidden sm:inline">Rider Mode</span>
+                    </Link>
                 </>
             )}
         </div >

@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true }, // Simple string for now as per user's "no extra login possible" likely meaning simple
+    uid: { type: String, unique: true, sparse: true },
+    email: { type: String },
+    displayName: { type: String },
+    photoURL: { type: String },
+    username: { type: String },
+    password: { type: String },
     lastLat: { type: Number },
     lastLng: { type: Number },
     lastLogin: { type: Date, default: Date.now },
@@ -10,3 +14,4 @@ const userSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('User', userSchema);
+

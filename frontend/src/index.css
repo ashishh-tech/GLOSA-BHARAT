@@ -187,3 +187,16 @@ body {
   border-top: 4px solid #FF9933;
   border-bottom: 4px solid #138808;
 }
+
+/* Fix Leaflet Map Overflow */
+.leaflet-container {
+  border-radius: inherit;
+  z-index: 1 !important;
+}
+.leaflet-pane {
+  z-index: 1 !important;
+}
+.leaflet-top,
+.leaflet-bottom {
+  z-index: 10 !important;
+}
