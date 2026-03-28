@@ -18,7 +18,12 @@ class PredictionResponse(BaseModel):
 
 @app.get("/")
 def read_root():
-    return {"status": "GLOSA AI Service Running"}
+    return {"status": "GLOSA AI Service Running", "version": "2.0"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "service": "glosa-ai", "timestamp": datetime.utcnow().isoformat()}
+
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict_signal(request: PredictionRequest):
