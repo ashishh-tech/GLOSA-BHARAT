@@ -15,10 +15,10 @@
 
   <p>
     <a href="#-live-deployments">Live Demo</a> •
-    <a href="#-architecture-schema">Architecture</a> •
-    <a href="#-ai-pipeline">AI Pipeline</a> •
-    <a href="#-project-structure">Structure</a> •
-    <a href="#-kolkata-case-study">Kolkata Case Study</a>
+    <a href="#-architecture-diagrams">Architecture</a> •
+    <a href="#-ai-intelligence-pipeline">AI Pipeline</a> •
+    <a href="#-database-schema">Database Schema</a> •
+    <a href="#-project-structure">Structure</a>
   </p>
 </div>
 
@@ -34,9 +34,9 @@
 
 ---
 
-## 🏗️ Architecture & Schema
+## 🏗️ Architecture Diagrams
 
-### 1. System Architecture
+### 1. System Architecture (High-Level)
 ```mermaid
 graph TD
     A[Junction: Standard CCTV Feed] -->|Traffic Density| B[WavePerception AI Engine]
@@ -48,22 +48,54 @@ graph TD
     F -->|Visual Instructions| G[Unified Mobility Dashboard]
 ```
 
-### 2. Database Schema (MongoDB Atlas)
-Sovereign health tracking of city corridors through three core collections:
-- **`junctions`**: Root metadata { `id`, `name`, `lat`, `lng`, `status`, `secondsToChange`, `recommendedSpeed` }
-- **`users`**: Telemetry synchronization { `uid`, `email`, `displayName`, `photoURL`, `currentLat`, `currentLng` }
-- **`traffic_data`**: Historical density logs for AI training { `junction_id`, `density_index`, `throughput_count`, `timestamp` }
-
 ---
 
 ## 🧠 AI Intelligence Pipeline
 
-Our **ClearWave AI Pipeline** executes a four-stage inference workflow:
+The **ClearWave AI Pipeline** executes a structured four-stage inference workflow:
 
-1.  **Ingestion**: Real-time RTSP/MJPEG frame extraction from standard urban CCTV infra.
-2.  **Perception**: YOLOv8-based multi-object detection (detecting lane-cutting autos, bikes, and buses).
-3.  **Analytic Logic**: Python/FastAPI calculating localized queue density and arrival probability.
-4.  **Prediction**: Outputting a sub-second optimized speed recommendation payload to the driver's HUD.
+```mermaid
+graph LR
+    A[CCTV Ingestion] -->|Frame Extraction| B[YOLOv8 Perception]
+    B -->|Object Localization| C[Analytic Logic / Queue Index]
+    C -->|Density Analysis| D[GLOSA Speed Prediction]
+    D -->|Optimization| E[Driver HUD Advisory]
+    
+    style A fill:#f96,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style E fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+---
+
+## 🗄️ Database Schema
+
+Sovereign telemetry tracking through three core collections in MongoDB Atlas:
+
+```mermaid
+erDiagram
+    junctions ||--o{ traffic_data : indexes
+    users {
+        string uid
+        string email
+        string displayName
+        float currentLat
+        float currentLng
+    }
+    junctions {
+        string id PK
+        string name
+        string status
+        int secondsToChange
+        float recommendedSpeed
+    }
+    traffic_data {
+        string junction_id FK
+        int density_index
+        int throughput_count
+        timestamp timestamp
+    }
+```
 
 ---
 
@@ -106,17 +138,6 @@ GLOSA-BHARAT/
 | 5 | Belgharia Junction | Medium | 110s | 1.43L Litres |
 | 6 | Agarpara Medical | Medium | 115s | 1.12L Litres |
 | 7 | NIT Narula Turn | Low | 80s | 0.54L Litres |
-
----
-
-## 🏆 Competitive Matrix: Existing vs GLOSA-BHARAT
-
-| Feature | Generic Traffic Systems | GLOSA-BHARAT |
-|---------|-------------------------|--------------|
-| **Deployment Cost** | ₹ ₹ ₹ ₹ (Requires LIDAR/Sensors) | **₹ (Zero-cost Hardware Integration)** |
-| **Traffic Handling** | Lane-disciplined only | **Heterogeneous Indian Traffic Ready** |
-| **Data Privacy** | Foreign Cloud Dependency | **Sovereign Local Server Architecture** |
-| **Goal** | Simple Monitoring | **Active Fuel & Emission Optimization** |
 
 ---
 
