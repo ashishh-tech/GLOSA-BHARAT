@@ -98,7 +98,7 @@ graph LR
 
 | Layer | Responsibility | Technologies |
 |-------|----------------|--------------|
-| **Frontend** | GIS Dashboard & Driver HUD | React, Vite, Leaflet, Framer Motion |
+| **Frontend** | GIS Dashboard & Driver HUD | React, Vite, Leaflet, Google Maps API, Framer Motion |
 | **Backend** | API Orchestration | Node.js, Express.js |
 | **Database** | Telemetry Storage | MongoDB Atlas |
 | **AI Intelligence** | Perception & Optimization | Python, YOLOv8, FastAPI |
@@ -171,7 +171,7 @@ GLOSA-BHARAT/
 - **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
 - **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
 - **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **📊 Digital Twin Dashboard**: A futuristic Leaflet/Google-based GIS dashboard for traffic authorities to monitor congestion and signal health.
 - **📡 Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
