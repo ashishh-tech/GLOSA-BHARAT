@@ -16,8 +16,8 @@
   <p>
     <a href="#-what-is-glosa-bharat">About</a> •
     <a href="#-live-deployments">Live Demo</a> •
-    <a href="#-target-users">Target Users</a> •
     <a href="#-the-solution">Solution</a> •
+    <a href="#-target-users">Target Users</a> •
     <a href="#-architecture-diagrams">Architecture</a> •
     <a href="#-anatomy-of-the-project">Structure</a>
   </p>
@@ -45,14 +45,16 @@ Urban commuters today sit in "stop-and-go" traffic, consuming unnecessary fuel a
 
 ---
 
-## 👥 Target Users
+## 🎯 Objective
 
-| User | Main Need | Key Feature |
-|------|-----------|-------------|
-| **Daily Commuter** | Time & Fuel Savings | Speed Advisory HUD |
-| **Logistics / Fleet** | Operational Efficiency | Fuel-optimized Route Corridors |
-| **Traffic Authority**| Congestion Management | Digital Twin GIS Dashboard |
-| **Urban Planner** | Data-driven Infrastructure | Throughput & Density Analytics |
+Build an **AI-powered mobility layer** that comprehensively connects heterogeneous traffic with signal infrastructure to:
+
+- Detect live junction density via standard CCTV feeds instantly.
+- Identify optimal speed windows to eliminate unnecessary idling.
+- Correlate vehicle telemetry with precise signal flip timings.
+- Provide a truly unified view of the traffic corridor for both drivers and authorities.
+
+➡️ **Goal: Eliminate city-wide "stop-and-go" patterns before they cause gridlock.**
 
 ---
 
@@ -65,6 +67,19 @@ Urban commuters today sit in "stop-and-go" traffic, consuming unnecessary fuel a
 3.  **Challan Mitigation Pipeline**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," removing the stress of accidental fines.
 4.  **Digital Twin GIS Dashboard**: A futuristic Leaflet and Google-based visualization layer for traffic authorities to monitor city-wide throughput.
 5.  **Hardware-Agnostic V2I Sync**: Works with existing government CCTV infrastructure, requiring zero expensive LIDAR or sensor retrofitting.
+
+---
+
+## 👥 Target Users
+
+| User | Main Need | Key Feature |
+|------|-----------|-------------|
+| **Daily Commuter** | Time & Fuel Savings | Speed Advisory HUD |
+| **Logistics / Fleet** | Operational Efficiency | Fuel-optimized Route Corridors |
+| **Traffic Authority**| Congestion Management | Digital Twin GIS Dashboard |
+| **Urban Planner** | Data-driven Infrastructure | Throughput & Density Analytics |
+
+> 💡 **Pitch Strategy**: Lead with the COMMUTER — specifically the daily worker. Nobody in their journey — not the GPS apps, not the traffic police — provides a 100% synchronized speed window to ensure they never hit a red light.
 
 ---
 
@@ -152,7 +167,7 @@ classDiagram
 
 ---
 
-## 📂 Anatomy of the Project
+## 🔎 Anatomy of the Project
 
 ```bash
 GLOSA-BHARAT/
