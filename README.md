@@ -16,6 +16,7 @@
   <p>
     <a href="#-what-is-glosa-bharat">About</a> •
     <a href="#-live-deployments">Live Demo</a> •
+    <a href="#-target-users">Target Users</a> •
     <a href="#-key-features--solutions">Features</a> •
     <a href="#-architecture-diagrams">Architecture</a> •
     <a href="#-anatomy-of-the-project">Structure</a>
@@ -44,26 +45,35 @@ Urban commuters today sit in "stop-and-go" traffic, consuming unnecessary fuel a
 
 ---
 
-## 🎯 Objective
+## 👥 Target Users
 
-Build an **AI-powered mobility layer** that comprehensively connects heterogeneous traffic with signal infrastructure to:
+| User | Main Need | Key Feature |
+|------|-----------|-------------|
+| **Daily Commuter** | Time & Fuel Savings | Speed Advisory HUD |
+| **Logistics / Fleet** | Operational Efficiency | Fuel-optimized Route Corridors |
+| **Traffic Authority**| Congestion Management | Digital Twin GIS Dashboard |
+| **Urban Planner** | Data-driven Infrastructure | Throughput & Density Analytics |
 
-- Detect live junction density via standard CCTV feeds instantly.
-- Identify optimal speed windows to eliminate unnecessary idling.
-- Correlate vehicle telemetry with precise signal flip timings.
-- Provide a truly unified view of the traffic corridor for both drivers and authorities.
-
-➡️ **Goal: Eliminate city-wide "stop-and-go" patterns before they cause gridlock.**
+> 💡 **Pitch Strategy**: Lead with the COMMUTER — specifically the daily worker. Nobody in their journey — not the GPS apps, not the traffic police — provides a 100% synchronized speed window to ensure they never hit a red light.
 
 ---
 
-## 💡 The Solution
+## 🧠 All Uses of AI within GLOSA BHARAT
 
-**GLOSA BHARAT** is the first platform that unites a city's traffic perception under one intelligent roof:
+1.  **Real-Time Edge Perception (YOLOv8)**: Utilizes custom-trained computer vision models to detect and classify heterogeneous Indian traffic (Bikes, Autos, Vans) with high precision in varying light conditions.
+2.  **Density-to-Signal Logic Hub**: AI actively calculates the "Queue Index" of vehicles at red lights, predicting exactly how much time is needed to clear the lane based on vehicle mixture.
+3.  **Predictive GLOSA Engine**: Machine learning algorithms analyze historical and real-time signal flipping patterns to generate a sub-second "Optimal Speed Window."
+4.  **GIS-to-HUD Correlation (NLP/Logic)**: Processes geospatial data and correlates it with junction status to provide human-readable advisories via the driver Interface.
+5.  **Dilemma Zone Analysis**: AI monitors the transition between yellow and red lights to proactively warn drivers if they are at risk of an accidental e-challan jump.
 
-1.  **AI-Powered WavePerception Engine**: Rapidly scans CCTV feeds via YOLOv8 for instantaneous object detection and queue indexing.
-2.  **Predictive Advisor Hub**: Uses sub-second logic to calculate the perfect KM/H to catch the "Green Wave."
-3.  **V2I Serial Bridge**: Synchronizes cloud-based AI with legacy signal controllers on the ground.
+---
+
+## 🌟 Innovation Points
+
+- **The V2I Physical-to-Digital Bridge**: We are the first indigenous platform to systematically bridge existing legacy signals with cloud AI without requiring multi-million dollar hardware upgrades.
+- **Hyper-Local Heterogeneous Intelligence**: Unlike global systems, our AI is trained specifically for the messy, high-density traffic mixtures unique to Indian urban corridors.
+- **Proactive, Not Reactive**: Existing apps tell you *where* the traffic is. **GLOSA BHARAT** tells you how fast to drive to ensure you *never encounter it*.
+- **Challan-Free Ecosystem**: A novel approach to urban driving that focuses on removing the "Yellow Light Anxiety," protecting citizens from accidental fines.
 
 ---
 
@@ -132,7 +142,7 @@ classDiagram
 
 ---
 
-## 🔎 Anatomy of the Project
+## 📂 Anatomy of the Project
 
 ```bash
 GLOSA-BHARAT/
@@ -163,16 +173,6 @@ GLOSA-BHARAT/
 │   └── deploy_cloud.sh      # Google Cloud Run deployment automation
 └── README.md                # Multi-modal Enterprise Documentation
 ```
-
----
-
-## 🌟 Key Features & Solutions
-
-- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
-- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
-- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet/Google-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **📡 Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
 
