@@ -18,8 +18,9 @@
     <a href="#-live-deployments">Live Demo</a> •
     <a href="#-the-solution">Solution</a> •
     <a href="#-target-users">Target Users</a> •
-    <a href="#-existing-solutions-vs-glosa-bharat">Competitive Matrix</a> •
-    <a href="#-architecture-diagrams">Architecture</a>
+    <a href="#-existing-solutions-vs-glosa-bharat">Matrix</a> •
+    <a href="#-architecture-diagrams">Architecture</a> •
+    <a href="#-anatomy-of-the-project">Structure</a>
   </p>
 </div>
 
@@ -248,6 +249,16 @@ GLOSA-BHARAT/
 | 5 | Belgharia Junction | Medium | 110s | 1.43L Litres |
 | 6 | Agarpara Medical | Medium | 115s | 1.12L Litres |
 | 7 | NIT Narula Turn | Low | 80s | 0.54L Litres |
+
+---
+
+## 🚀 Live Deployments
+
+| Service | URL | Platform |
+|---------|-----|----------|
+| 🌐 **Frontend** | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
+| ⚙️ **Backend API** | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
+| 🤖 **AI Service** | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
 
 ---
 
