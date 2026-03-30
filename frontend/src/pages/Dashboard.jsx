@@ -851,17 +851,19 @@ const Dashboard = () => {
                     </header>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div className="lg:col-span-2 gov-card p-0 overflow-hidden relative min-h-[500px] border-2 border-navy/20 shadow-2xl">
-                            <MapComponent
-                                junction={selectedJunction}
-                                vehiclePosition={mockPosition}
-                                distance={advisory?.distance || 500}
-                                signalStatus={advisory?.signalStatus || 'IDLE'}
-                                routePath={routeInfo.path}
-                                routeJunctions={routeInfo.junctions}
-                                start={routeInfo.start}
-                                destination={routeInfo.destination}
-                            />
+                        <div className="lg:col-span-2 gov-card !p-0 overflow-hidden relative min-h-[500px] border-2 border-navy/20 shadow-2xl flex flex-col">
+                            <div className="flex-1 w-full relative">
+                                <MapComponent
+                                    junction={selectedJunction}
+                                    vehiclePosition={mockPosition}
+                                    distance={advisory?.distance || 500}
+                                    signalStatus={advisory?.signalStatus || 'IDLE'}
+                                    routePath={routeInfo.path}
+                                    routeJunctions={routeInfo.junctions}
+                                    start={routeInfo.start}
+                                    destination={routeInfo.destination}
+                                />
+                            </div>
                         </div>
                         <div className="space-y-6">
                             {/* ── Traffic Light Pole (Simulation Tab) ── */}
