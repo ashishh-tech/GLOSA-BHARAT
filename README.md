@@ -62,11 +62,19 @@ Build an **AI-powered mobility layer** that comprehensively connects heterogeneo
 
 **GLOSA BHARAT** is the first platform that unites a city's traffic perception under one intelligent roof:
 
-1.  **Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
-2.  **Indigenous AI Core Intelligence**: Custom-trained YOLOv8 models optimized for heterogeneous Indian traffic mixtures (Bikes, Autos, Vans).
-3.  **Challan Mitigation Pipeline**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," removing the stress of accidental fines.
-4.  **Digital Twin GIS Dashboard**: A futuristic Leaflet and Google-based visualization layer for traffic authorities to monitor city-wide throughput.
-5.  **Hardware-Agnostic V2I Sync**: Works with existing government CCTV infrastructure, requiring zero expensive LIDAR or sensor retrofitting.
+1.  **AI-Powered WavePerception Engine**: Rapidly scans CCTV feeds via YOLOv8 for instantaneous object detection and queue indexing.
+2.  **Predictive Advisor Hub**: Uses sub-second logic to calculate the perfect KM/H to catch the "Green Wave."
+3.  **V2I Serial Bridge**: Synchronizes cloud-based AI with legacy signal controllers on the ground.
+
+---
+
+## 🛠️ Key Features
+
+- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
+- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
+- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
+- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **📡 Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
 
