@@ -24,13 +24,25 @@
 
 ---
 
-## 🔗 Live Deployments
+## 🚩 Problem Statement
 
-| Service | URL | Platform |
-|---------|-----|----------|
-| 🌐 **Frontend** | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
-| ⚙️ **Backend API** | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
-| 🤖 **AI Service** | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
+Urban centers in India face a silent economic and environmental crisis driven by traffic friction:
+- **Economic Loss**: Idling at red lights costs billions in lost productivity and fuel imports.
+- **Environmental Impact**: Vehicular "stop-and-go" patterns are a primary source of urban CO2 and PM2.5 hotspots.
+- **Unnecessary Challans**: Drivers often face automated fines (e-challans) for technical signal jumps caused by poor signal visibility or unexpected timing flips.
+- **Inflexible Infrastructure**: Current traffic signal systems are "pre-timed" and cannot adapt to real-time traffic density.
+- **Energy Insecurity**: High national fuel consumption is exacerbated by inefficient driving habits in congested corridors.
+
+---
+
+## 🌟 Key Features & Solutions
+
+- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, **eliminating unintentional signal jumps**.
+- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
+- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
+- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in city-wide fuel consumption and PM2.5 emissions.
+- **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
 
@@ -114,16 +126,6 @@ GLOSA-BHARAT/
 
 ---
 
-## 🌟 Key Features
-
-- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly.
-- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in city-wide fuel consumption and PM2.5 emissions.
-- **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
-
----
-
 ## 🗺️ Kolkata Case Study: Girish Park to NIT Narula
 
 > **Developer's Route**: Ashish Chaurasia | **Distance**: 8.7 km | **Junctions**: 7  
@@ -143,6 +145,7 @@ GLOSA-BHARAT/
 
 ## 🚀 Impact & Benefits
 
+- **🛡️ Legal Protection**: Prevents unnecessary e-challans by removing the "stop-go" guesswork at yellow lights.
 - **🌏 Global Ecology**: Targeted reduction in particulate matter (PM2.5) by minimizing idling.
 - **📈 Economic Gains**: Saving city-wide logistics providers 15-20% in annual fuel costs.
 - **🇮🇳 Sovereign Resilience**: 100% indigenous software stack sitting on secure Indian clouds.
