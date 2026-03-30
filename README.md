@@ -17,7 +17,7 @@
     <a href="#-what-is-glosa-bharat">About</a> •
     <a href="#-live-deployments">Live Demo</a> •
     <a href="#-target-users">Target Users</a> •
-    <a href="#-key-features--solutions">Features</a> •
+    <a href="#-the-solution">Solution</a> •
     <a href="#-architecture-diagrams">Architecture</a> •
     <a href="#-anatomy-of-the-project">Structure</a>
   </p>
@@ -54,16 +54,26 @@ Urban commuters today sit in "stop-and-go" traffic, consuming unnecessary fuel a
 | **Traffic Authority**| Congestion Management | Digital Twin GIS Dashboard |
 | **Urban Planner** | Data-driven Infrastructure | Throughput & Density Analytics |
 
-> 💡 **Pitch Strategy**: Lead with the COMMUTER — specifically the daily worker. Nobody in their journey — not the GPS apps, not the traffic police — provides a 100% synchronized speed window to ensure they never hit a red light.
+---
+
+## 💡 The Solution
+
+**GLOSA BHARAT** is the first platform that unites a city's traffic perception under one intelligent roof:
+
+1.  **Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
+2.  **Indigenous AI Core Intelligence**: Custom-trained YOLOv8 models optimized for heterogeneous Indian traffic mixtures (Bikes, Autos, Vans).
+3.  **Challan Mitigation Pipeline**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," removing the stress of accidental fines.
+4.  **Digital Twin GIS Dashboard**: A futuristic Leaflet and Google-based visualization layer for traffic authorities to monitor city-wide throughput.
+5.  **Hardware-Agnostic V2I Sync**: Works with existing government CCTV infrastructure, requiring zero expensive LIDAR or sensor retrofitting.
 
 ---
 
 ## 🧠 All Uses of AI within GLOSA BHARAT
 
-1.  **Real-Time Edge Perception (YOLOv8)**: Utilizes custom-trained computer vision models to detect and classify heterogeneous Indian traffic (Bikes, Autos, Vans) with high precision in varying light conditions.
-2.  **Density-to-Signal Logic Hub**: AI actively calculates the "Queue Index" of vehicles at red lights, predicting exactly how much time is needed to clear the lane based on vehicle mixture.
+1.  **Real-Time Edge Perception (YOLOv8)**: Utilizes custom-trained computer vision models to detect and classify heterogeneous Indian traffic with high precision in varying light conditions.
+2.  **Density-to-Signal Logic Hub**: AI actively calculates the "Queue Index" of vehicles at red lights, predicting exactly how much time is needed to clear the lane.
 3.  **Predictive GLOSA Engine**: Machine learning algorithms analyze historical and real-time signal flipping patterns to generate a sub-second "Optimal Speed Window."
-4.  **GIS-to-HUD Correlation (NLP/Logic)**: Processes geospatial data and correlates it with junction status to provide human-readable advisories via the driver Interface.
+4.  **GIS-to-HUD Correlation**: Processes geospatial data and correlates it with junction status to provide human-readable advisories via the driver Interface.
 5.  **Dilemma Zone Analysis**: AI monitors the transition between yellow and red lights to proactively warn drivers if they are at risk of an accidental e-challan jump.
 
 ---
