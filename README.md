@@ -18,31 +18,19 @@
     <a href="#-architecture-diagrams">Architecture</a> •
     <a href="#-ai-intelligence-pipeline">AI Pipeline</a> •
     <a href="#-database-schema">Database Schema</a> •
-    <a href="#-project-structure">Structure</a>
+    <a href="#-anatomy-of-the-project">Project Structure</a>
   </p>
 </div>
 
 ---
 
-## 🚩 Problem Statement
+## 🔗 Live Deployments
 
-Urban centers in India face a silent economic and environmental crisis driven by traffic friction:
-- **Economic Loss**: Idling at red lights costs billions in lost productivity and fuel imports.
-- **Environmental Impact**: Vehicular "stop-and-go" patterns are a primary source of urban CO2 and PM2.5 hotspots.
-- **Unnecessary Challans**: Drivers often face automated fines (e-challans) for technical signal jumps caused by poor signal visibility or unexpected timing flips.
-- **Inflexible Infrastructure**: Current traffic signal systems are "pre-timed" and cannot adapt to real-time traffic density.
-- **Energy Insecurity**: High national fuel consumption is exacerbated by inefficient driving habits in congested corridors.
-
----
-
-## 🌟 Key Features & Solutions
-
-- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, **eliminating unintentional signal jumps**.
-- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
-- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in city-wide fuel consumption and PM2.5 emissions.
-- **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
+| Service | URL | Platform |
+|---------|-----|----------|
+| 🌐 **Frontend** | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
+| ⚙️ **Backend API** | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
+| 🤖 **AI Service** | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
 
 ---
 
@@ -111,18 +99,47 @@ erDiagram
 
 ---
 
-## 📂 Project Structure
+## 🔎 Anatomy of the Project
 
 ```bash
 GLOSA-BHARAT/
-├── frontend/          # React + Vite (GIS, D3.js Charts, Advisory HUD)
-├── backend/           # Node.js + Express (Orchestration & Data Sync)
-├── ai-service/        # Python + FastAPI (YOLOv8 Inference Engine)
-├── hardware/          # Arduino + Serial Bridge (V2I Signal Integration)
-├── scripts/           # Data seeding, migration, and diagnostic tools
-├── models/            # Weights and configurations for YOLOv8
-└── README.md          # Enterprise Documentation
+├── ai-service/              # Python Intelligence Layer
+│   ├── main.py              # FastAPI server & route definitions
+│   ├── model_loader.py      # YOLOv8 weight loading orchestration
+│   ├── inference_logic.py   # Traffic density calculation algorithms
+│   └── requirements.txt     # Python dependency manifest
+├── backend/                 # Node.js Orchestration Tier
+│   ├── index.js             # Main server entry point
+│   ├── models/              # Mongoose schemas (Junctions, Users)
+│   ├── routes/              # API endpoints for telemetry sync
+│   └── package.json         # Backend manifest
+├── frontend/                # React Fiber Interface
+│   ├── src/
+│   │   ├── components/      # Advisory HUD & GIS Map modules
+│   │   ├── pages/           # Dashboard, Landing & Auth views
+│   │   ├── App.jsx          # Routing & State Management
+│   │   └── index.css        # Global futuristic styling
+│   ├── public/              # Static assets & GIS icons
+│   └── vite.config.js       # Vite configuration
+├── hardware/                # V2I Physical Prototype (Arduino)
+│   ├── glosa_hardware/
+│   │   └── glosa_hardware.ino # LCD/LED Signal Simulation C++ code
+│   └── serial_bridge.py      # Laptop-to-Hardware serial communicator
+├── scripts/                 # DevOps & Utility Scripts
+│   ├── seed_junctions.js    # Initializing MongoDB traffic data
+│   └── deploy_cloud.sh      # Google Cloud Run deployment automation
+└── README.md                # Multi-modal Enterprise Documentation
 ```
+
+---
+
+## 🌟 Key Features & Solutions
+
+- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, **eliminating unintentional signal jumps**.
+- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
+- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
+- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
 
