@@ -2,7 +2,7 @@
   <h1>🚦 GLOSA BHARAT</h1>
   <p><b>Intelligent Urban Mobility Ecosystem for a Self-Reliant India</b></p>
   
-  <img src="https://img.shields.io/badge/Initiative-Atmanirbhar%20Bharat-orange.svg" alt="Atmanirbhar Bharat" />
+  <img src="https://img.shields.io/badge/Theme-Responsible%20AI-blue.svg" alt="Responsible AI" />
   <img src="https://img.shields.io/badge/Stack-Fullstack%20AI-blue.svg" alt="Fullstack AI" />
   <img src="https://img.shields.io/badge/Frontend-React%20%2F%20Vite-61DAFB?logo=react" alt="React" />
   <img src="https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js" alt="Node.js" />
@@ -157,7 +157,6 @@ GLOSA-BHARAT/
 - **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
 - **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
 - **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in city-wide fuel consumption and PM2.5 emissions.
 - **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
