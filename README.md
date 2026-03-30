@@ -132,16 +132,36 @@ classDiagram
 
 ---
 
-## 📂 Anatomy of the Project
+## 🔎 Anatomy of the Project
 
 ```bash
 GLOSA-BHARAT/
-├── ai-service/              # Python Intelligence Layer (FastAPI, YOLOv8)
-├── backend/                 # Node.js Orchestration Tier (Express, MongoDB)
-├── frontend/                # React Fiber Interface (GIS, D3.js Charts)
-├── hardware/                # V2I Physical Prototype (Arduino, C++)
-├── scripts/                 # DevOps & Deployment Automation
-└── README.md                # Premium Project Documentation
+├── ai-service/              # Python Intelligence Layer
+│   ├── main.py              # FastAPI server & route definitions
+│   ├── model_loader.py      # YOLOv8 weight loading orchestration
+│   ├── inference_logic.py   # Traffic density calculation algorithms
+│   └── requirements.txt     # Python dependency manifest
+├── backend/                 # Node.js Orchestration Tier
+│   ├── index.js             # Main server entry point
+│   ├── models/              # Mongoose schemas (Junctions, Users)
+│   ├── routes/              # API endpoints for telemetry sync
+│   └── package.json         # Backend manifest
+├── frontend/                # React Fiber Interface
+│   ├── src/
+│   │   ├── components/      # Advisory HUD & GIS Map modules
+│   │   ├── pages/           # Dashboard, Landing & Auth views
+│   │   ├── App.jsx          # Routing & State Management
+│   │   └── index.css        # Global futuristic styling
+│   ├── public/              # Static assets & GIS icons
+│   └── vite.config.js       # Vite configuration
+├── hardware/                # V2I Physical Prototype (Arduino)
+│   ├── glosa_hardware/
+│   │   └── glosa_hardware.ino # LCD/LED Signal Simulation C++ code
+│   └── serial_bridge.py      # Laptop-to-Hardware serial communicator
+├── scripts/                 # DevOps & Utility Scripts
+│   ├── seed_junctions.js    # Initializing MongoDB traffic data
+│   └── deploy_cloud.sh      # Google Cloud Run deployment automation
+└── README.md                # Multi-modal Enterprise Documentation
 ```
 
 ---
@@ -182,6 +202,6 @@ GLOSA-BHARAT/
 
 ---
 
-## 👨–💻 Developer & Visionary
+## 👨‍💻 Developer & Visionary
 **Presented at AI UTKARSH 2026 - AI SUMMIT**   
 *Narula Institute of Technology (NiT) • Theme: Responsible AI*
