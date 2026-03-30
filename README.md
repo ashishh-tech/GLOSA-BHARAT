@@ -90,7 +90,21 @@ graph LR
     D --> E[Driver HUD Advisory]
 ```
 
-### 🗄️ Database Schema (MongoDB Atlas)
+---
+
+## 📚 Technical Foundation
+
+### 1. Technology Stack
+
+| Layer | Responsibility | Technologies |
+|-------|----------------|--------------|
+| **Frontend** | GIS Dashboard & Driver HUD | React, Vite, Leaflet, Framer Motion |
+| **Backend** | API Orchestration | Node.js, Express.js |
+| **Database** | Telemetry Storage | MongoDB Atlas |
+| **AI Intelligence** | Perception & Optimization | Python, YOLOv8, FastAPI |
+| **Hardware Bridge** | Physical V2I Simulation | Arduino (C++), Serial Communications |
+
+### 2. Database Schema (MongoDB Atlas)
 ```mermaid
 classDiagram
     class User {
@@ -132,6 +146,33 @@ GLOSA-BHARAT/
 
 ---
 
+## 🌟 Key Features & Solutions
+
+- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
+- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
+- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
+- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **📡 Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
+
+---
+
+## 🗺️ Kolkata Case Study: Girish Park to NIT Narula
+
+> **Developer's Route**: Ashish Chaurasia | **Distance**: 8.7 km | **Junctions**: 7  
+> **Route Corridor**: Girish Park → Shyambazar 5-Point → Sinthi More → Dunlop → Agarpara
+
+| # | Junction | Vehicle Density | Red Duration | Annual Fuel Waste |
+|---|----------|-----------------|--------------|-------------------|
+| 1 | Girish Park Metro | High | 120s | 1.78L Litres |
+| 2 | Shyambazar 5-Point | Very High | 160s | 3.12L Litres |
+| 3 | Sinthi More Junction | High | 130s | 1.98L Litres |
+| 4 | Dunlop Crossing | Very High | 140s | 2.67L Litres |
+| 5 | Belgharia Junction | Medium | 110s | 1.43L Litres |
+| 6 | Agarpara Medical | Medium | 115s | 1.12L Litres |
+| 7 | NIT Narula Turn | Low | 80s | 0.54L Litres |
+
+---
+
 ## 🚀 Impact & Benefits
 
 - **🛡️ Legal Protection**: Prevents unnecessary e-challans by removing the "stop-go" guesswork at yellow lights.
@@ -141,6 +182,6 @@ GLOSA-BHARAT/
 
 ---
 
-## 👨‍💻 Developer & Visionary
+## 👨–💻 Developer & Visionary
 **Presented at AI UTKARSH 2026 - AI SUMMIT**   
 *Narula Institute of Technology (NiT) • Theme: Responsible AI*
