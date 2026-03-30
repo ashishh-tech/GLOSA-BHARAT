@@ -14,13 +14,20 @@
   <p><i>Presented at AI UTKARSH 2026 - AI SUMMIT • Narula Institute of Technology (NiT) • Theme: Responsible AI</i></p>
 
   <p>
+    <a href="#-what-is-glosa-bharat">About</a> •
     <a href="#-live-deployments">Live Demo</a> •
     <a href="#-architecture-diagrams">Architecture</a> •
-    <a href="#-ai-intelligence-pipeline">AI Pipeline</a> •
-    <a href="#-database-schema">Database Schema</a> •
     <a href="#-anatomy-of-the-project">Project Structure</a>
   </p>
 </div>
+
+---
+
+## ❓ What is GLOSA BHARAT?
+
+**GLOSA BHARAT** (Green Light Optimal Speed Advisory) is a high-fidelity **Vehicle-to-Infrastructure (V2I)** ecosystem designed to eliminate urban traffic friction and fuel wastage using indigenous AI. 
+
+It acts as a **Personal Mobility Guardian**, synchronizing your driving speed with city traffic signals. By using real-time AI perception from existing CCTV cameras, the system calculates the "Optimal Speed" you should maintain to reach a junction exactly when the signal turns green—creating a seamless **"Green Wave"** corridor that saves time, reduces fuel consumption, and prevents unnecessary signal-jump challans.
 
 ---
 
@@ -31,6 +38,17 @@
 | 🌐 **Frontend** | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
 | ⚙️ **Backend API** | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
 | 🤖 **AI Service** | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
+
+---
+
+## 🚩 Problem Statement
+
+Urban centers in India face a silent economic and environmental crisis driven by traffic friction:
+- **Economic Loss**: Idling at red lights costs billions in lost productivity and fuel imports.
+- **Environmental Impact**: Vehicular "stop-and-go" patterns are a primary source of urban CO2 and PM2.5 hotspots.
+- **Unnecessary Challans**: Drivers often face automated fines (e-challans) for technical signal jumps caused by poor signal visibility or unexpected timing flips.
+- **Inflexible Infrastructure**: Current traffic signal systems are "pre-timed" and cannot adapt to real-time traffic density.
+- **Energy Insecurity**: High national fuel consumption is exacerbated by inefficient driving habits in congested corridors.
 
 ---
 
@@ -139,6 +157,7 @@ GLOSA-BHARAT/
 - **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
 - **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
 - **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in city-wide fuel consumption and PM2.5 emissions.
 - **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
