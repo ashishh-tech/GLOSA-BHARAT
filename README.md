@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚦 GLOSA-BHARAT</h1>
+  <h1>🚦 GLOSA BHARAT</h1>
   <p><b>Intelligent Urban Mobility Ecosystem for a Self-Reliant India</b></p>
   
   <img src="https://img.shields.io/badge/Initiative-Atmanirbhar%20Bharat-orange.svg" alt="Atmanirbhar Bharat" />
@@ -11,7 +11,7 @@
   <br />
   <br />
 
-  <p><i>Presented at AI for Atmanirbhar Bharat Seminar 2026 • Theme: Responsible AI & Smart Mobility</i></p>
+  <p><i>Presented at AI UTKARSH 2026 - AI SUMMIT • Narula Institute of Technology (NiT) • Theme: Responsible AI</i></p>
 
   <p>
     <a href="#-live-deployments">Live Demo</a> •
@@ -150,5 +150,5 @@ GLOSA-BHARAT/
 ---
 
 ## 👨‍💻 Developer & Visionary
-**Developed for the AI for Atmanirbhar Bharat Seminar 2026**   
-*Developed as part of the National Mobility Initiative.*
+**Presented at AI UTKARSH 2026 - AI SUMMIT**   
+*Narula Institute of Technology (NiT) • Theme: Responsible AI*
