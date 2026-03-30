@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚦 GLOSA-BHARAT 2.0</h1>
+  <h1>🚦 GLOSA-BHARAT</h1>
   <p><b>Intelligent Urban Mobility Ecosystem for a Self-Reliant India</b></p>
   
   <img src="https://img.shields.io/badge/Initiative-Atmanirbhar%20Bharat-orange.svg" alt="Atmanirbhar Bharat" />
@@ -15,9 +15,9 @@
 
   <p>
     <a href="#-live-deployments">Live Demo</a> •
-    <a href="#-problem-statement">Problem</a> •
-    <a href="#-solutions--use-of-ai">AI Innovation</a> •
-    <a href="#-impact--benefits">Impact</a> •
+    <a href="#-architecture-schema">Architecture</a> •
+    <a href="#-ai-pipeline">AI Pipeline</a> •
+    <a href="#-project-structure">Structure</a> •
     <a href="#-kolkata-case-study">Kolkata Case Study</a>
   </p>
 </div>
@@ -32,61 +32,11 @@
 | ⚙️ **Backend API** | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
 | 🤖 **AI Service** | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
 
-> **Note**: These are live endpoints running on Google's highly-available serverless infrastructure (asia-south1 region).
-
 ---
 
-## 🚩 Problem Statement
+## 🏗️ Architecture & Schema
 
-Urban centers in India face a silent economic and environmental crisis driven by traffic friction:
-- **Economic Loss**: Idling at red lights costs billions in lost productivity and fuel imports.
-- **Environmental Impact**: Vehicular "stop-and-go" patterns are a primary source of urban CO2 and PM2.5 hotspots.
-- **Inflexible Infrastructure**: Current traffic signal systems are "pre-timed" and cannot adapt to real-time traffic density.
-- **Energy Insecurity**: High national fuel consumption is exacerbated by inefficient driving habits in congested corridors.
-
----
-
-## 🌟 Key Features
-
-- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly.
-- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **⚡ Low-Latency Orchestration**: High-speed Node.js middleware for sub-second data routing.
-- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in fuel consumption and city-wide PM2.5 emissions.
-- **🛰️ Hardware-Agnostic**: works with existing government CCTV infrastructure—no expensive LIDAR needed.
-
----
-
-## 👥 Target User Segments
-
-1.  **Urban Commuters**: Direct-to-consumer app for stress-free, fuel-efficient daily travel.
-2.  **Logistics & Fleet Operators**: Organizations like Zomato, Swiggy, and Amazon tracking corridor efficiency.
-3.  **Public Transport (TSP)**: Enabling "Transit Signal Priority" for buses and metro feeder services.
-4.  **Smart City Authorities**: Providing a "God-eye view" for traffic flow management and bottleneck identification.
-
----
-
-## 🧠 Solutions & Use of AI in GLOSA-BHARAT
-
-**GLOSA-BHARAT** uses a high-accuracy, three-layer AI orchestration system to harmonize vehicles with infrastructure:
-
-### 1. Perception Logic (WavePerception)
-Utilizes **YOLOv8** to analyze standard CCTV feeds. AI performs:
-- **Object Localization**: Distinguishing between 14 different vehicle classes in high-density Indian environments.
-- **Queue Density Mapping**: Real-time pixel-level calculation of vehicle backup at junctions.
-
-### 2. Computational Advisor (GLOSA Logic)
-Synthesizes telemetry data using a predictive mathematical framework:
-- **Phase Forecasting**: predicting exactly when a signal will change based on historical and real-time density.
-- **Optimal Speed Mapping**: Calculating `V_opt = Distance / (Time_to_Flip)` with a safety-first buffer.
-
-### 3. Sustainability AI
-Predicts the environmental impact of individual journeys, providing "Eco-Scores" to drivers to incentivize smooth mobility.
-
----
-
-## 🏗️ Architecture
-
+### 1. System Architecture
 ```mermaid
 graph TD
     A[Junction: Standard CCTV Feed] -->|Traffic Density| B[WavePerception AI Engine]
@@ -98,35 +48,54 @@ graph TD
     F -->|Visual Instructions| G[Unified Mobility Dashboard]
 ```
 
----
-
-## 🛠️ Tech Stack & Innovation
-
-| Component | Technology | Innovation Point |
-|-----------|------------|------------------|
-| **Frontend** | React / Leaflet / Framer | Futuristic, low-distraction "Control Room" HMI |
-| **Backend** | Node.js / Express | Sub-second latency orchestration for V2I |
-| **Edge AI** | Python / YOLOv8 / FastAPI | Trained on diverse, unlane-led Indian traffic patterns |
-| **Connectivity** | V2I Serial Bridge | Seamless integration with legacy signal controllers |
+### 2. Database Schema (MongoDB Atlas)
+Sovereign health tracking of city corridors through three core collections:
+- **`junctions`**: Root metadata { `id`, `name`, `lat`, `lng`, `status`, `secondsToChange`, `recommendedSpeed` }
+- **`users`**: Telemetry synchronization { `uid`, `email`, `displayName`, `photoURL`, `currentLat`, `currentLng` }
+- **`traffic_data`**: Historical density logs for AI training { `junction_id`, `density_index`, `throughput_count`, `timestamp` }
 
 ---
 
-## 🏆 Competitive Edge: Existing vs GLOSA-BHARAT
+## 🧠 AI Intelligence Pipeline
 
-| Feature | Generic Signal Systems | GLOSA-BHARAT |
-|---------|-------------------------|--------------|
-| **Deployment Cost** | ₹ ₹ ₹ ₹ (Requires LIDAR/Sensors) | **₹ (Zero-cost Hardware Integration)** |
-| **Traffic Handling** | Lane-disciplined/Binary | **Heterogeneous Indian Traffic Ready** |
-| **Data Privacy** | Foreign Cloud Dependency | **Sovereign Local Server Architecture** |
-| **Driver Awareness** | None (Static countdowns) | **Active Advisory (Optimal Speed)** |
-| **Sustainability** | Passive Monitoring | **Active Fuel & Emission Optimization** |
+Our **ClearWave AI Pipeline** executes a four-stage inference workflow:
+
+1.  **Ingestion**: Real-time RTSP/MJPEG frame extraction from standard urban CCTV infra.
+2.  **Perception**: YOLOv8-based multi-object detection (detecting lane-cutting autos, bikes, and buses).
+3.  **Analytic Logic**: Python/FastAPI calculating localized queue density and arrival probability.
+4.  **Prediction**: Outputting a sub-second optimized speed recommendation payload to the driver's HUD.
+
+---
+
+## 📂 Project Structure
+
+```bash
+GLOSA-BHARAT/
+├── frontend/          # React + Vite (GIS, D3.js Charts, Advisory HUD)
+├── backend/           # Node.js + Express (Orchestration & Data Sync)
+├── ai-service/        # Python + FastAPI (YOLOv8 Inference Engine)
+├── hardware/          # Arduino + Serial Bridge (V2I Signal Integration)
+├── scripts/           # Data seeding, migration, and diagnostic tools
+├── models/            # Weights and configurations for YOLOv8
+└── README.md          # Enterprise Documentation
+```
+
+---
+
+## 🌟 Key Features
+
+- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly.
+- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
+- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **🌱 Fuel & Emission Reduction**: Targeted 15-20% reduction in city-wide fuel consumption and PM2.5 emissions.
+- **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
 
 ---
 
 ## 🗺️ Kolkata Case Study: Girish Park to NIT Narula
 
 > **Developer's Route**: Ashish Chaurasia | **Distance**: 8.7 km | **Junctions**: 7  
-> **Route Corridor**: Girish Park → Shyambazar → BT Road → Dunlop → NIT Narula, Agarpara
+> **Route Corridor**: Girish Park → Shyambazar 5-Point → Sinthi More → Dunlop → Agarpara
 
 | # | Junction | Vehicle Density | Red Duration | Annual Fuel Waste |
 |---|----------|-----------------|--------------|-------------------|
@@ -138,16 +107,24 @@ graph TD
 | 6 | Agarpara Medical | Medium | 115s | 1.12L Litres |
 | 7 | NIT Narula Turn | Low | 80s | 0.54L Litres |
 
-**Impact with GLOSA**: Travel time reduced from **38 min → 26 min (-12 min)**, achieving an average fuel saving of 18%.
+---
+
+## 🏆 Competitive Matrix: Existing vs GLOSA-BHARAT
+
+| Feature | Generic Traffic Systems | GLOSA-BHARAT |
+|---------|-------------------------|--------------|
+| **Deployment Cost** | ₹ ₹ ₹ ₹ (Requires LIDAR/Sensors) | **₹ (Zero-cost Hardware Integration)** |
+| **Traffic Handling** | Lane-disciplined only | **Heterogeneous Indian Traffic Ready** |
+| **Data Privacy** | Foreign Cloud Dependency | **Sovereign Local Server Architecture** |
+| **Goal** | Simple Monitoring | **Active Fuel & Emission Optimization** |
 
 ---
 
 ## 🚀 Impact & Benefits
 
-- **🌏 Global Ecology**: Significant reduction in urban particulate matter (PM2.5).
-- **📉 Economic Gains**: Targeted 15-20% reduction in city-wide logistics fuel costs.
-- **🏎️ Fluid Mobility**: Achieving the "Green Wave" corridor vision across Indian Smart Cities.
-- **🇮🇳 Sovereign Resilience**: 100% indigenous software stack sitting on local servers.
+- **🌏 Global Ecology**: Targeted reduction in particulate matter (PM2.5) by minimizing idling.
+- **📈 Economic Gains**: Saving city-wide logistics providers 15-20% in annual fuel costs.
+- **🇮🇳 Sovereign Resilience**: 100% indigenous software stack sitting on secure Indian clouds.
 
 ---
 
