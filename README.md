@@ -18,8 +18,8 @@
     <a href="#-live-deployments">Live Demo</a> •
     <a href="#-the-solution">Solution</a> •
     <a href="#-target-users">Target Users</a> •
-    <a href="#-architecture-diagrams">Architecture</a> •
-    <a href="#-anatomy-of-the-project">Structure</a>
+    <a href="#-existing-solutions-vs-glosa-bharat">Competitive Matrix</a> •
+    <a href="#-architecture-diagrams">Architecture</a>
   </p>
 </div>
 
@@ -75,6 +75,31 @@ Build an **AI-powered mobility layer** that comprehensively connects heterogeneo
 - **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
 - **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
 - **📡 Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
+
+---
+
+## ⚖️ Existing Solutions vs. GLOSA BHARAT
+
+### 🏆 5 Things NOBODY Has Built Before
+
+1.  **Indigenous V2I Hardware Sync**: Real-time cloud-to-junction synchronization without infra retrofitting.
+2.  **Sub-Second Heterogeneous Indexing**: AI detection of Bikes, Vans, and Autos in a single unified flow.
+3.  **Proactive Speed Windows**: Guiding the driver *before* the junction, not just showing traffic after it forms.
+4.  **Automatic Dilemma Zone Detection**: Proactive warnings to prevent accidental e-challan signal jumps.
+5.  **Low-Cost Digital Twin**: Full city-wide digital twin modeling using only standard government camera feeds.
+
+### 📊 Feature Comparison Matrix
+
+| Feature | Google Maps | Waze | Apple Maps | GLOSA BHARAT |
+|---------|:-----------:|:----:|:----------:|:------------:|
+| Traffic Alerts | ✅ | ✅ | ✅ | ✅ |
+| Route Planning | ✅ | ✅ | ✅ | ✅ |
+| Live Signal Sync | ❌ | ❌ | ❌ | ✅ |
+| Speed Advisory | ❌ | ❌ | ❌ | ✅ |
+| Challan Mitigation | ❌ | ❌ | ❌ | ✅ |
+| V2I Connectivity | ❌ | ❌ | ❌ | ✅ |
+| Queue Indexing | ❌ | ❌ | ❌ | ✅ |
+| Carbon Footprint Log| ❌ | ❌ | ❌ | ✅ |
 
 ---
 
