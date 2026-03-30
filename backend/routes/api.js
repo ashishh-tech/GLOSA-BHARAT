@@ -373,4 +373,55 @@ router.get('/multimodal', (req, res) => {
     res.json({ journeys, lastUpdated: new Date().toISOString() });
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🔌 HARDWARE PROTOTYPE ENDPOINT — Arduino Serial Bridge ke liye
+// GET /api/hardware/signal-state?junction=shyambazar
+// Returns real-time signal state for physical LED + LCD control
+// ─────────────────────────────────────────────────────────────────────────────
+const hardwareSignalConfigs = {
+    shyambazar: { cycle: 60, red: 30, yellow: 5,  green: 25 },
+    sinthi:     { cycle: 55, red: 28, yellow: 4,  green: 23 },
+    dunlop:     { cycle: 65, red: 35, yellow: 5,  green: 25 },
+    girish:     { cycle: 50, red: 25, yellow: 5,  green: 20 },
+    belgharia:  { cycle: 58, red: 28, yellow: 5,  green: 25 },
+    agarpara:   { cycle: 52, red: 26, yellow: 4,  green: 22 },
+};
+
+router.get('/hardware/signal-state', (req, res) => {
+    const junctionId = req.query.junction || 'shyambazar';
+    const cfg        = hardwareSignalConfigs[junctionId] || hardwareSignalConfigs.shyambazar;
+    const pos        = Math.floor(Date.now() / 1000) % cfg.cycle;
+
+    let signal, timeRemaining, advisorySpeed;
+
+    if (pos < cfg.red) {
+        signal        = 'RED';
+        timeRemaining = cfg.red - pos;
+        advisorySpeed = 0;
+    } else if (pos < cfg.red + cfg.yellow) {
+        signal        = 'YELLOW';
+        timeRemaining = (cfg.red + cfg.yellow) - pos;
+        advisorySpeed = 0;
+    } else {
+        signal        = 'GREEN';
+        timeRemaining = cfg.cycle - pos;
+        // GLOSA Advisory: vehicle 200m away, clamp 20–50 km/h
+        const rawKmh  = Math.round((200 / Math.max(timeRemaining, 1)) * 3.6);
+        advisorySpeed = Math.min(50, Math.max(20, rawKmh));
+    }
+
+    console.log(`🔌 [Hardware] Junction: ${junctionId} | Signal: ${signal} | Time: ${timeRemaining}s | Speed: ${advisorySpeed} km/h`);
+
+    res.json({
+        junction:      junctionId,
+        signal:        signal,
+        timeRemaining: timeRemaining,
+        advisorySpeed: advisorySpeed,
+        cycleTotal:    cfg.cycle,
+        timestamp:     new Date().toISOString(),
+        source:        'GLOSA-BHARAT v2.0'
+    });
+});
+
 module.exports = router;
+

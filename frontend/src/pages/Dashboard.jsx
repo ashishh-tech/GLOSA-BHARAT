@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -39,6 +39,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import MapComponent from '../components/MapComponent';
+import { getLiveKolkataJunctions } from '../data/kolkata_junctions';
 
 const Dashboard = () => {
     // Safely handle auth context
@@ -299,6 +300,34 @@ const Dashboard = () => {
         return () => clearInterval(tick);
     }, []);
 
+    // ── Local traffic-light simulation (runs when backend is offline) ──────────
+    // Cycle: RED 30s → GREEN 25s → AMBER 5s → repeat
+    const SIGNAL_CYCLE = [
+        { status: 'RED',   duration: 30 },
+        { status: 'GREEN', duration: 25 },
+        { status: 'AMBER', duration: 5  },
+    ];
+    const [simulatedSignal, setSimulatedSignal] = useState({ status: 'RED', seconds: 30 });
+    const simPhaseRef = useRef(0);  // which phase index we are on
+    const simSecsRef  = useRef(30); // seconds remaining in this phase
+
+    useEffect(() => {
+        const simTick = setInterval(() => {
+            simSecsRef.current -= 1;
+            if (simSecsRef.current <= 0) {
+                // advance to next phase
+                simPhaseRef.current = (simPhaseRef.current + 1) % SIGNAL_CYCLE.length;
+                const next = SIGNAL_CYCLE[simPhaseRef.current];
+                simSecsRef.current = next.duration;
+            }
+            setSimulatedSignal({
+                status:  SIGNAL_CYCLE[simPhaseRef.current].status,
+                seconds: simSecsRef.current,
+            });
+        }, 1000);
+        return () => clearInterval(simTick);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
     const statusMap = {
         'online': 'status-online',
         'active': 'status-active',
@@ -467,6 +496,7 @@ const Dashboard = () => {
 
     // Quick demo routes — one-click fills and submits the routing form
     const DEMO_ROUTES = [
+        { label: '🌉 Girish Park → NIT Narula', start: 'Girish Park, Kolkata', dest: 'NIT Narula, Agarpara', isKolkataDemo: true },
         { label: '🏛️ India Gate → CP', start: 'India Gate, New Delhi', dest: 'Connaught Place, New Delhi' },
         { label: '🚉 Howrah Station → Park Street', start: 'Howrah Station, Kolkata', dest: 'Park Street, Kolkata' },
         { label: '✈️ BKC → CSIA Mumbai', start: 'Bandra Kurla Complex, Mumbai', dest: 'Chhatrapati Shivaji Maharaj International Airport, Mumbai' },
@@ -475,8 +505,32 @@ const Dashboard = () => {
     const runDemoRoute = async (route) => {
         setStartQuery(route.start);
         setDestinationQuery(route.dest);
-        // Trigger geocode + route immediately
         setIsRouting(true);
+
+        if (route.isKolkataDemo) {
+            const mapJunctions = getLiveKolkataJunctions();
+            const startCoords = { lat: mapJunctions[0].lat, lng: mapJunctions[0].lng };
+            const destCoords = { lat: mapJunctions[mapJunctions.length - 1].lat, lng: mapJunctions[mapJunctions.length - 1].lng, name: mapJunctions[mapJunctions.length - 1].name };
+            
+            setRouteInfo(prev => ({ ...prev, start: { ...startCoords, name: mapJunctions[0].name }, destination: destCoords }));
+            setMockPosition(startCoords);
+            
+            try {
+                // Fetch high-fidelity route line using OSRM geometry over the BT Road
+                const waypoints = mapJunctions.map(j => `${j.lng},${j.lat}`).join(';');
+                const routeRes = await axios.get(`https://router.project-osrm.org/route/v1/driving/${waypoints}?overview=full&geometries=geojson`);
+                if (routeRes.data.routes?.length) {
+                    const path = routeRes.data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+                    setRouteInfo(prev => ({ ...prev, path, junctions: mapJunctions }));
+                    setSelectedJunction(mapJunctions[0]);
+                }
+            } catch (_) { /* OSRM unavailable */ }
+            
+            showToast(`✅ Demo route loaded: ${route.label}`);
+            setIsRouting(false);
+            return;
+        }
+
         try {
             const [sRes, dRes] = await Promise.all([
                 axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(route.start)}&limit=1&accept-language=en`),
@@ -670,15 +724,72 @@ const Dashboard = () => {
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-saffron/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
                                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-green-600/10 rounded-full -ml-16 -mb-16 blur-3xl"></div>
 
-                                <h2 className="text-xs font-black text-blue-300 uppercase tracking-[0.3em] mb-8">AI Advisory Terminal</h2>
+                                <h2 className="text-xs font-black text-blue-300 uppercase tracking-[0.3em] mb-4">AI Advisory Terminal</h2>
 
-                                <div className={`w-40 h-40 rounded-full border-8 flex flex-col items-center justify-center mb-8 shadow-2xl transition-all duration-700 ${advisory?.signalStatus === 'GREEN' ? 'border-green-500/30' : advisory?.signalStatus === 'RED' ? 'border-red-500/30' : 'border-amber-500/30'}`}>
-                                    <div className={`w-32 h-32 rounded-full flex flex-col items-center justify-center transition-all duration-500 ${advisory?.signalStatus === 'GREEN' ? 'bg-green-600 shadow-green-900/50' : advisory?.signalStatus === 'RED' ? 'bg-red-600 shadow-red-900/50' : 'bg-amber-600 shadow-amber-900/50'}`}>
-                                        <span className="text-[10px] font-black opacity-80 uppercase tracking-widest">{advisory?.signalStatus || 'SYNCING'}</span>
-                                        <span className="text-6xl font-black">{advisory ? Math.round(advisory.secondsToChange) : "--"}</span>
-                                        <span className="text-[10px] font-black opacity-60">SECONDS</span>
-                                    </div>
-                                </div>
+                                {/* ── Traffic Light Pole ── */}
+                                {(() => {
+                                    // Use real advisory data if available, else local simulation
+                                    const liveStatus  = advisory?.signalStatus;
+                                    const liveSeconds = advisory?.secondsToChange;
+                                    const status  = liveStatus  ?? simulatedSignal.status;
+                                    const seconds = liveSeconds ?? simulatedSignal.seconds;
+                                    const isRed    = status === 'RED';
+                                    const isGreen  = status === 'GREEN';
+                                    const isAmber  = status === 'AMBER' || (!isRed && !isGreen);
+
+                                    return (
+                                        <div className="flex flex-col items-center mb-6">
+                                            {/* Housing */}
+                                            <div className="relative bg-[#1a1a2e] border-2 border-slate-600 rounded-2xl px-4 py-5 flex flex-col items-center gap-4 shadow-2xl" style={{width:'90px'}}>
+                                                {/* Red bulb */}
+                                                <div className="relative">
+                                                    <div className={`w-14 h-14 rounded-full transition-all duration-700 border-4 ${
+                                                        isRed
+                                                            ? 'bg-red-500 border-red-400 shadow-[0_0_28px_12px_rgba(239,68,68,0.7)]'
+                                                            : 'bg-red-950 border-red-900/40'
+                                                    }`} />
+                                                    {isRed && <div className="absolute inset-0 rounded-full animate-ping bg-red-500/30" />}
+                                                </div>
+                                                {/* Amber bulb */}
+                                                <div className="relative">
+                                                    <div className={`w-14 h-14 rounded-full transition-all duration-700 border-4 ${
+                                                        isAmber
+                                                            ? 'bg-amber-400 border-amber-300 shadow-[0_0_28px_12px_rgba(251,191,36,0.7)]'
+                                                            : 'bg-amber-950 border-amber-900/40'
+                                                    }`} />
+                                                    {isAmber && <div className="absolute inset-0 rounded-full animate-ping bg-amber-400/30" />}
+                                                </div>
+                                                {/* Green bulb */}
+                                                <div className="relative">
+                                                    <div className={`w-14 h-14 rounded-full transition-all duration-700 border-4 ${
+                                                        isGreen
+                                                            ? 'bg-green-400 border-green-300 shadow-[0_0_28px_12px_rgba(74,222,128,0.7)]'
+                                                            : 'bg-green-950 border-green-900/40'
+                                                    }`} />
+                                                    {isGreen && <div className="absolute inset-0 rounded-full animate-ping bg-green-400/30" />}
+                                                </div>
+                                            </div>
+                                            {/* Pole */}
+                                            <div className="w-3 h-8 bg-gradient-to-b from-slate-500 to-slate-700 rounded-b-sm" />
+                                            <div className="w-10 h-2 bg-slate-600 rounded-full" />
+
+                                            {/* Countdown badge */}
+                                            <div className={`mt-4 flex flex-col items-center justify-center w-28 h-20 rounded-2xl border-2 shadow-xl transition-all duration-700 ${
+                                                isRed   ? 'bg-red-600/20   border-red-500/50   text-red-300'
+                                              : isGreen ? 'bg-green-600/20 border-green-500/50 text-green-300'
+                                              :           'bg-amber-600/20 border-amber-500/50 text-amber-300'
+                                            }`}>
+                                                <span className={`text-4xl font-black leading-none tabular-nums ${
+                                                    isRed   ? 'text-red-200'
+                                                  : isGreen ? 'text-green-200'
+                                                  :           'text-amber-200'
+                                                }`}>{Math.round(seconds)}</span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">SECONDS</span>
+                                                <span className="text-[8px] font-black uppercase tracking-widest opacity-50">{status}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
 
                                 <div className="w-full space-y-4 px-6">
                                     <div className="bg-white/5 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-center">
@@ -753,16 +864,60 @@ const Dashboard = () => {
                             />
                         </div>
                         <div className="space-y-6">
-                            <div className={`gov-card text-center p-8 border-b-8 shadow-2xl transition-all duration-700 ${advisory?.signalStatus === 'GREEN' ? 'border-green-600' : advisory?.signalStatus === 'RED' ? 'border-red-600' : 'border-amber-500'}`}>
-                                <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Current Signal Phase</p>
-                                <div className={`w-32 h-32 rounded-full mx-auto flex flex-col items-center justify-center mb-6 ${advisory?.signalStatus === 'GREEN' ? 'bg-green-600' : advisory?.signalStatus === 'RED' ? 'bg-red-600' : 'bg-amber-600'} text-white shadow-xl`}>
-                                    <span className="text-5xl font-black">{advisory ? Math.round(advisory.secondsToChange) : "--"}</span>
-                                    <span className="text-[10px] font-black opacity-80">SECONDS</span>
-                                </div>
-                                <h3 className={`text-2xl font-black uppercase ${advisory?.signalStatus === 'GREEN' ? 'text-green-600' : advisory?.signalStatus === 'RED' ? 'text-red-600' : 'text-amber-600'}`}>
-                                    {advisory?.signalStatus || 'DETECTING...'}
-                                </h3>
-                            </div>
+                            {/* ── Traffic Light Pole (Simulation Tab) ── */}
+                            {(() => {
+                                const liveStatus  = advisory?.signalStatus;
+                                const liveSeconds = advisory?.secondsToChange;
+                                const status  = liveStatus  ?? simulatedSignal.status;
+                                const seconds = liveSeconds ?? simulatedSignal.seconds;
+                                const isRed   = status === 'RED';
+                                const isGreen = status === 'GREEN';
+                                const isAmber = status === 'AMBER' || (!isRed && !isGreen);
+                                const borderColor = isRed ? 'border-red-600' : isGreen ? 'border-green-600' : 'border-amber-500';
+
+                                return (
+                                    <div className={`gov-card text-center p-6 border-b-8 shadow-2xl transition-all duration-700 ${borderColor}`}>
+                                        <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-5">Current Signal Phase</p>
+
+                                        <div className="flex flex-col items-center">
+                                            {/* Housing */}
+                                            <div className="relative bg-[#1a1a2e] border-2 border-slate-600 rounded-2xl px-4 py-5 flex flex-col items-center gap-4 shadow-2xl" style={{width:'90px'}}>
+                                                {/* Red */}
+                                                <div className="relative">
+                                                    <div className={`w-14 h-14 rounded-full transition-all duration-700 border-4 ${isRed ? 'bg-red-500 border-red-400 shadow-[0_0_28px_12px_rgba(239,68,68,0.7)]' : 'bg-red-950 border-red-900/40'}`} />
+                                                    {isRed && <div className="absolute inset-0 rounded-full animate-ping bg-red-500/30" />}
+                                                </div>
+                                                {/* Amber */}
+                                                <div className="relative">
+                                                    <div className={`w-14 h-14 rounded-full transition-all duration-700 border-4 ${isAmber ? 'bg-amber-400 border-amber-300 shadow-[0_0_28px_12px_rgba(251,191,36,0.7)]' : 'bg-amber-950 border-amber-900/40'}`} />
+                                                    {isAmber && <div className="absolute inset-0 rounded-full animate-ping bg-amber-400/30" />}
+                                                </div>
+                                                {/* Green */}
+                                                <div className="relative">
+                                                    <div className={`w-14 h-14 rounded-full transition-all duration-700 border-4 ${isGreen ? 'bg-green-400 border-green-300 shadow-[0_0_28px_12px_rgba(74,222,128,0.7)]' : 'bg-green-950 border-green-900/40'}`} />
+                                                    {isGreen && <div className="absolute inset-0 rounded-full animate-ping bg-green-400/30" />}
+                                                </div>
+                                            </div>
+                                            {/* Pole */}
+                                            <div className="w-3 h-8 bg-gradient-to-b from-slate-500 to-slate-700 rounded-b-sm" />
+                                            <div className="w-10 h-2 bg-slate-600 rounded-full" />
+
+                                            {/* Countdown */}
+                                            <div className={`mt-4 flex flex-col items-center justify-center w-28 h-20 rounded-2xl border-2 shadow-xl transition-all duration-700 ${
+                                                isRed   ? 'bg-red-600/20   border-red-500/50'
+                                              : isGreen ? 'bg-green-600/20 border-green-500/50'
+                                              :           'bg-amber-600/20 border-amber-500/50'
+                                            }`}>
+                                                <span className={`text-4xl font-black leading-none tabular-nums ${isRed ? 'text-red-200' : isGreen ? 'text-green-200' : 'text-amber-200'}`}>
+                                                    {Math.round(seconds)}
+                                                </span>
+                                                <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">SECONDS</span>
+                                                <span className={`text-[10px] font-black uppercase mt-1 ${isRed ? 'text-red-400' : isGreen ? 'text-green-400' : 'text-amber-400'}`}>{status}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
 
                             {/* Signal Wave Advisory Panel */}
                             {routeInfo.junctions.length > 0 && (
@@ -826,6 +981,212 @@ const Dashboard = () => {
                             </div>
                         </div>
                     </div>
+
+                    {/* ══ Route Intelligence Panel ══════════════════════════════════════ */}
+                    {(() => {
+                        const junctions = routeInfo.junctions;
+                        const hasRoute  = routeInfo.path.length > 0 || junctions.length > 0;
+
+                        // Derived stats
+                        const totalJunctions = junctions.length || 5;
+                        const greenCount  = junctions.filter(j => j.status === 'GREEN').length  || 2;
+                        const redCount    = junctions.filter(j => j.status === 'RED').length    || 2;
+                        const amberCount  = junctions.filter(j => j.status === 'AMBER').length  || 1;
+                        const avgWait     = junctions.length > 0
+                            ? Math.round(junctions.reduce((s,j) => s + (j.secondsToChange||20), 0) / junctions.length)
+                            : 18;
+                        const routeDistKm = routeInfo.path.length > 1
+                            ? (routeInfo.path.length * 0.08).toFixed(1)
+                            : '8.4';
+                        const etaMins = Math.round(parseFloat(routeDistKm) / 40 * 60) || 12;
+                        const fuelSaved = (parseFloat(routeDistKm) * 0.04).toFixed(1) || '0.3';
+
+                        // Mock junction rows when backend is offline
+                        const displayJunctions = junctions.length > 0 ? junctions : [
+                            { name: 'Shyambazar 5-Point',   distance: 320,  status: 'RED',   secondsToChange: 22, recommendedSpeed: 35, speedLimit: 50 },
+                            { name: 'Girish Park Cross.',   distance: 890,  status: 'GREEN', secondsToChange: 14, recommendedSpeed: 48, speedLimit: 50 },
+                            { name: 'Cossipore Chowk',      distance: 1500, status: 'AMBER', secondsToChange: 5,  recommendedSpeed: 30, speedLimit: 40 },
+                            { name: 'Chitpur Junction',     distance: 2200, status: 'GREEN', secondsToChange: 28, recommendedSpeed: 50, speedLimit: 50 },
+                            { name: 'Baranagar T-Point',    distance: 3100, status: 'RED',   secondsToChange: 31, recommendedSpeed: 32, speedLimit: 60 },
+                        ];
+
+                        const speedLimitForJunction = (j) => j.speedLimit || 50;
+
+                        // Congestion segments (mock if no route)
+                        const segments = [
+                            { label: 'Segment 1', load: 28,  color: '#22c55e' },
+                            { label: 'Segment 2', load: 55,  color: '#f59e0b' },
+                            { label: 'Segment 3', load: 82,  color: '#ef4444' },
+                            { label: 'Segment 4', load: 41,  color: '#22c55e' },
+                            { label: 'Segment 5', load: 67,  color: '#f97316' },
+                        ];
+
+                        return (
+                            <div className="space-y-6 mt-2">
+                                {/* ─ Top KPI bar ─ */}
+                                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                                    {[
+                                        { icon: '📍', label: 'Route Distance',   value: `${routeDistKm} km`,      sub: 'Total path length',    accent: 'border-blue-500'   },
+                                        { icon: '⏱️', label: 'Estimated ETA',    value: `${etaMins} min`,         sub: 'At recommended speed', accent: 'border-green-500'  },
+                                        { icon: '🚦', label: 'Junctions Ahead',  value: totalJunctions,           sub: `${greenCount} green · ${redCount} red`,  accent: 'border-amber-500'  },
+                                        { icon: '⚡', label: 'Avg Signal Wait',  value: `${avgWait}s`,            sub: 'Per intersection',     accent: 'border-red-500'    },
+                                        { icon: '⛽', label: 'Fuel Saved',       value: `~${fuelSaved}L`,         sub: 'vs non-GLOSA route',   accent: 'border-emerald-500'},
+                                        { icon: '🛡️', label: 'GLOSA Score',      value: '94%',                    sub: 'Signal sync quality',  accent: 'border-purple-500' },
+                                    ].map((kpi, i) => (
+                                        <div key={i} className={`gov-card border-l-4 ${kpi.accent} flex flex-col gap-1 py-4`}>
+                                            <span className="text-lg">{kpi.icon}</span>
+                                            <p className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest">{kpi.label}</p>
+                                            <p className="text-2xl font-black text-[var(--text-primary)] leading-none">{kpi.value}</p>
+                                            <p className="text-[9px] text-[var(--text-secondary)] font-semibold">{kpi.sub}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* ─ Main bottom grid ─ */}
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                                    {/* Junction breakdown table */}
+                                    <div className="lg:col-span-2 gov-card p-0 overflow-hidden">
+                                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-white/5">
+                                            <div>
+                                                <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Junction-by-Junction Breakdown</p>
+                                                <h3 className="text-base font-black text-[var(--text-primary)]">Route Signal Intelligence</h3>
+                                            </div>
+                                            <span className="text-[10px] font-black bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full uppercase tracking-widest">
+                                                {hasRoute ? 'Live' : 'Demo Data'}
+                                            </span>
+                                        </div>
+
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 dark:border-slate-800">
+                                                        {['#', 'Junction', 'Distance', 'Signal', 'Speed Limit', 'Opt. Speed', 'Time to Flip', 'Action'].map(h => (
+                                                            <th key={h} className="px-4 py-3 text-left text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest whitespace-nowrap">{h}</th>
+                                                        ))}
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {displayJunctions.map((j, idx) => {
+                                                        const isR = j.status === 'RED';
+                                                        const isG = j.status === 'GREEN';
+                                                        const sigColor = isG ? 'bg-green-500' : isR ? 'bg-red-500' : 'bg-amber-400';
+                                                        const sigText  = isG ? 'text-green-600 dark:text-green-400' : isR ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400';
+                                                        const limit    = speedLimitForJunction(j);
+                                                        const optSpd   = j.recommendedSpeed || 40;
+                                                        const action   = isR ? '🛑 Slow Down' : isG ? '✅ Maintain' : '⚠️ Caution';
+                                                        return (
+                                                            <tr key={idx} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
+                                                                <td className="px-4 py-3 text-[10px] font-black text-[var(--text-secondary)]">{idx + 1}</td>
+                                                                <td className="px-4 py-3">
+                                                                    <p className="text-xs font-black text-[var(--text-primary)] whitespace-nowrap">{j.name}</p>
+                                                                </td>
+                                                                <td className="px-4 py-3 text-xs font-bold text-[var(--text-secondary)] whitespace-nowrap">
+                                                                    {j.distance >= 1000 ? `${(j.distance/1000).toFixed(1)} km` : `${j.distance} m`}
+                                                                </td>
+                                                                <td className="px-4 py-3">
+                                                                    <span className={`flex items-center gap-1.5 text-[10px] font-black uppercase ${sigText}`}>
+                                                                        <span className={`w-2 h-2 rounded-full ${sigColor}`} />
+                                                                        {j.status || 'UNKNOWN'}
+                                                                    </span>
+                                                                </td>
+                                                                <td className="px-4 py-3">
+                                                                    <div className="flex items-center gap-1">
+                                                                        <div className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg px-2 py-0.5 text-[10px] font-black">
+                                                                            {limit} KM/H
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-4 py-3">
+                                                                    <div className={`flex items-center gap-1 text-[10px] font-black ${optSpd <= limit * 0.7 ? 'text-orange-500' : 'text-blue-600 dark:text-blue-400'}`}>
+                                                                        {optSpd} <span className="opacity-60 font-bold">km/h</span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="px-4 py-3 text-xs font-black text-[var(--text-primary)]">
+                                                                    {Math.round(j.secondsToChange || 0)}s
+                                                                </td>
+                                                                <td className="px-4 py-3 text-[10px] font-black whitespace-nowrap">{action}</td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    {/* Right column: congestion + speed profile */}
+                                    <div className="space-y-4">
+                                        {/* Traffic congestion per segment */}
+                                        <div className="gov-card">
+                                            <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-1">Route Traffic Flow</p>
+                                            <h3 className="text-sm font-black text-[var(--text-primary)] mb-4">Congestion by Segment</h3>
+                                            <div className="space-y-3">
+                                                {segments.map((seg, i) => (
+                                                    <div key={i}>
+                                                        <div className="flex justify-between text-[9px] font-black uppercase mb-1">
+                                                            <span className="text-[var(--text-secondary)]">{seg.label}</span>
+                                                            <span style={{ color: seg.color }}>{seg.load}%</span>
+                                                        </div>
+                                                        <div className="h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
+                                                            <div
+                                                                className="h-full rounded-full transition-all duration-1000"
+                                                                style={{ width: `${seg.load}%`, background: seg.color }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Speed zone summary */}
+                                        <div className="gov-card">
+                                            <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] mb-1">Speed Zone Summary</p>
+                                            <h3 className="text-sm font-black text-[var(--text-primary)] mb-4">Limits on This Route</h3>
+                                            <div className="space-y-2">
+                                                {[
+                                                    { zone: 'Urban Stretch',   limit: '40',  dist: '2.1 km', color: 'bg-orange-500' },
+                                                    { zone: 'Main Arterial',   limit: '50',  dist: '4.8 km', color: 'bg-blue-500'   },
+                                                    { zone: 'NH Connector',    limit: '60',  dist: '1.5 km', color: 'bg-green-500'  },
+                                                    { zone: 'School Zone',     limit: '20',  dist: '0.3 km', color: 'bg-red-500'    },
+                                                ].map((z, i) => (
+                                                    <div key={i} className="flex items-center gap-3 bg-slate-50 dark:bg-white/5 px-3 py-2 rounded-xl">
+                                                        <div className={`${z.color} text-white text-[10px] font-black px-2 py-1 rounded-lg min-w-[42px] text-center`}>
+                                                            {z.limit}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-[10px] font-black text-[var(--text-primary)] truncate">{z.zone}</p>
+                                                            <p className="text-[9px] text-[var(--text-secondary)]">{z.dist}</p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Eco impact */}
+                                        <div className="gov-card bg-gradient-to-br from-emerald-900/30 to-green-900/20 border border-green-700/30">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <Leaf className="h-4 w-4 text-green-400" />
+                                                <p className="text-[10px] font-black text-green-400 uppercase tracking-widest">Eco Impact</p>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                {[
+                                                    { label: 'CO₂ Saved',    value: `${(parseFloat(routeDistKm)*12).toFixed(0)}g`,  color: 'text-green-300'  },
+                                                    { label: 'Fuel Saved',   value: `~${fuelSaved}L`,  color: 'text-emerald-300' },
+                                                    { label: 'Idle Time ↓',  value: `${Math.round(avgWait*0.6)}s`,              color: 'text-teal-300'   },
+                                                    { label: 'Efficiency',   value: '+18%',            color: 'text-lime-300'    },
+                                                ].map((e, i) => (
+                                                    <div key={i} className="bg-white/5 rounded-xl p-2.5 text-center">
+                                                        <p className={`text-lg font-black ${e.color}`}>{e.value}</p>
+                                                        <p className="text-[8px] font-black text-white/50 uppercase">{e.label}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
                 </div>
             );
         }

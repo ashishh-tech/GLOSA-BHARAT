@@ -135,7 +135,7 @@ const MapComponent = ({
 
     return (
         <div
-            className="relative w-full h-[450px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-slate-50 dark:bg-slate-900 transition-colors duration-300 isolate"
+            className="relative w-full h-full min-h-[450px] rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg bg-slate-50 dark:bg-slate-900 transition-colors duration-300 isolate"
             style={{ contain: 'strict' }}
         >
             <MapContainer

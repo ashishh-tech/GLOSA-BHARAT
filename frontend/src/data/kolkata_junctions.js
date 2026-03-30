@@ -1,112 +1,34 @@
-// ─── Kolkata Junction Data — Girish Park → NIT Narula, Agarpara ─────────────
-// Developer's real daily commute route via BT Road
-
-const KOLKATA_JUNCTIONS = [
-  {
-    id: 1, sequence: 1,
-    name: "Girish Park Metro Crossing",
-    area: "Start Point",
-    lat: 22.5889, lng: 88.3654,
-    redDuration: 90, greenDuration: 45, yellowDuration: 5,
-    peakHourRed: 120, peakHourGreen: 35,
-    distanceFromStart_km: 0,
-    distanceToNext_km: 1.2,
-    vehicleDensity: "high",
-    annualFuelWaste_litres: 178000,
-    note: "Metro exit — heavy morning rush 8-10am"
-  },
-  {
-    id: 2, sequence: 2,
-    name: "Shyambazar 5-Point Crossing",
-    area: "BT Road Entry",
-    lat: 22.6054, lng: 88.3697,
-    redDuration: 130, greenDuration: 65, yellowDuration: 5,
-    peakHourRed: 160, peakHourGreen: 50,
-    distanceFromStart_km: 1.2,
-    distanceToNext_km: 2.1,
-    vehicleDensity: "very_high",
-    annualFuelWaste_litres: 312000,
-    note: "Kolkata most congested 5-point junction"
-  },
-  {
-    id: 3, sequence: 3,
-    name: "Sinthi More Junction",
-    area: "BT Road North",
-    lat: 22.6189, lng: 88.3712,
-    redDuration: 100, greenDuration: 50, yellowDuration: 5,
-    peakHourRed: 130, peakHourGreen: 40,
-    distanceFromStart_km: 3.3,
-    distanceToNext_km: 1.8,
-    vehicleDensity: "high",
-    annualFuelWaste_litres: 198000,
-    note: "Bus depot nearby — heavy auto + bus congestion"
-  },
-  {
-    id: 4, sequence: 4,
-    name: "Dunlop Crossing",
-    area: "BT Road North",
-    lat: 22.6389, lng: 88.3756,
-    redDuration: 110, greenDuration: 55, yellowDuration: 5,
-    peakHourRed: 140, peakHourGreen: 45,
-    distanceFromStart_km: 5.1,
-    distanceToNext_km: 1.4,
-    vehicleDensity: "very_high",
-    annualFuelWaste_litres: 267000,
-    note: "Major industrial + student traffic"
-  },
-  {
-    id: 5, sequence: 5,
-    name: "Belgharia Junction",
-    area: "BT Road North",
-    lat: 22.6521, lng: 88.3798,
-    redDuration: 90, greenDuration: 45, yellowDuration: 5,
-    peakHourRed: 110, peakHourGreen: 35,
-    distanceFromStart_km: 6.5,
-    distanceToNext_km: 1.2,
-    vehicleDensity: "medium",
-    annualFuelWaste_litres: 143000,
-    note: "Industrial area — moderate traffic"
-  },
-  {
-    id: 6, sequence: 6,
-    name: "Agarpara Medical College Junction",
-    area: "BT Road Agarpara",
-    lat: 22.6598, lng: 88.3821,
-    redDuration: 90, greenDuration: 45, yellowDuration: 5,
-    peakHourRed: 115, peakHourGreen: 35,
-    distanceFromStart_km: 7.7,
-    distanceToNext_km: 0.6,
-    vehicleDensity: "medium",
-    annualFuelWaste_litres: 112000,
-    note: "Hospital traffic — ambulances get priority"
-  },
-  {
-    id: 7, sequence: 7,
-    name: "The Aryans School Turn — BT Road",
-    area: "Final Turn to NIT Narula",
-    lat: 22.6631, lng: 88.3834,
-    redDuration: 60, greenDuration: 30, yellowDuration: 5,
-    peakHourRed: 80, peakHourGreen: 25,
-    distanceFromStart_km: 8.3,
-    distanceToNext_km: 0.4,
-    vehicleDensity: "low",
-    annualFuelWaste_litres: 54000,
-    note: "Turn into college lane — school children crossing"
-  }
+export const KOLKATA_JUNCTIONS = [
+    { id: 'KOL-01', name: 'Girish Park Crossing', lat: 22.5857, lng: 88.3601, status: 'GREEN', secondsToChange: 15 },
+    { id: 'KOL-02', name: 'Shyambazar 5-Point Crossing', lat: 22.6015, lng: 88.3739, status: 'RED', secondsToChange: 45 },
+    { id: 'KOL-03', name: 'Chiria More', lat: 22.6247, lng: 88.3840, status: 'AMBER', secondsToChange: 4 },
+    { id: 'KOL-04', name: 'Sinthee More', lat: 22.6366, lng: 88.3854, status: 'GREEN', secondsToChange: 22 },
+    { id: 'KOL-05', name: 'Dunlop Bridge Crossing', lat: 22.6517, lng: 88.3813, status: 'RED', secondsToChange: 35 },
+    { id: 'KOL-06', name: 'Kamarhati Junction', lat: 22.6715, lng: 88.3813, status: 'GREEN', secondsToChange: 10 },
+    { id: 'KOL-07', name: 'NIT Narula (Agarpara)', lat: 22.6980, lng: 88.3768, status: 'RED', secondsToChange: 55 }
 ];
 
-const ROUTE_SUMMARY = {
-  name: "Girish Park → NIT Narula Agarpara",
-  developerRoute: true,
-  developerNote: "Real daily commute of developer Ashish Chaurasia",
-  totalDistance_km: 8.7,
-  totalJunctions: 7,
-  estimatedTime_normal_min: 38,
-  estimatedTime_withGLOSA_min: 26,
-  timeSaved_min: 12,
-  fuelSaved_percent: 18,
-  totalAnnualFuelWaste_litres: 1264000,
-  co2Saved_kg_per_day: 2.6
-};
+// Helper to simulate live cycle changes
+export const getLiveKolkataJunctions = () => {
+    const cycleTime = 60;
+    const timeInCycle = (Date.now() / 1000) % cycleTime;
+    
+    return KOLKATA_JUNCTIONS.map((j, idx) => {
+        // Offset each junction simulation based on its index
+        const offsetTime = (timeInCycle + (idx * 15)) % cycleTime;
+        let status, toChange;
 
-export { KOLKATA_JUNCTIONS, ROUTE_SUMMARY };
+        if (offsetTime < 30) {
+            status = 'GREEN';
+            toChange = 30 - offsetTime;
+        } else if (offsetTime < 55) {
+            status = 'RED';
+            toChange = 55 - offsetTime;
+        } else {
+            status = 'AMBER';
+            toChange = 60 - offsetTime;
+        }
+
+        return { ...j, status, secondsToChange: Math.round(toChange) };
+    });
+};
