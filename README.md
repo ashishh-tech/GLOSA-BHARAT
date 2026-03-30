@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚦 GLOSA BHARAT</h1>
+  <h1>GLOSA BHARAT</h1>
   <p><b>Intelligent Urban Mobility Ecosystem for a Self-Reliant India</b></p>
   
   <img src="https://img.shields.io/badge/Theme-Responsible%20AI-blue.svg" alt="Responsible AI" />
@@ -14,16 +14,17 @@
   <p><i>Presented at AI UTKARSH 2026 - AI SUMMIT • Narula Institute of Technology (NiT) • Theme: Responsible AI</i></p>
 
   <p>
-    <a href="#-what-is-glosa-bharat">About</a> •
-    <a href="#-live-deployments">Live Demo</a> •
-    <a href="#-architecture-diagrams">Architecture</a> •
-    <a href="#-anatomy-of-the-project">Project Structure</a>
+    <a href="#what-is-glosa-bharat">About</a> •
+    <a href="#live-deployments">Live Demo</a> •
+    <a href="#key-features--solutions">Features</a> •
+    <a href="#architecture-diagrams">Architecture</a> •
+    <a href="#anatomy-of-the-project">Project Structure</a>
   </p>
 </div>
 
 ---
 
-## ❓ What is GLOSA BHARAT?
+## What is GLOSA BHARAT?
 
 **GLOSA BHARAT** (Green Light Optimal Speed Advisory) is a high-fidelity **Vehicle-to-Infrastructure (V2I)** ecosystem designed to eliminate urban traffic friction and fuel wastage using indigenous AI. 
 
@@ -31,17 +32,17 @@ It acts as a **Personal Mobility Guardian**, synchronizing your driving speed wi
 
 ---
 
-## 🔗 Live Deployments
+## Live Deployments
 
 | Service | URL | Platform |
 |---------|-----|----------|
-| 🌐 **Frontend** | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
-| ⚙️ **Backend API** | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
-| 🤖 **AI Service** | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
+| Frontend | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
+| Backend API | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
+| AI Service | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
 
 ---
 
-## 🚩 Problem Statement
+## Problem Statement
 
 Urban centers in India face a silent economic and environmental crisis driven by traffic friction:
 - **Economic Loss**: Idling at red lights costs billions in lost productivity and fuel imports.
@@ -52,7 +53,17 @@ Urban centers in India face a silent economic and environmental crisis driven by
 
 ---
 
-## 🏗️ Architecture Diagrams
+## Key Features & Solutions
+
+- **Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
+- **Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
+- **Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
+- **Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
+- **Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
+
+---
+
+## Architecture Diagrams
 
 ### 1. System Architecture (High-Level)
 ```mermaid
@@ -68,7 +79,7 @@ graph TD
 
 ---
 
-## 🧠 AI Intelligence Pipeline
+## AI Intelligence Pipeline
 
 The **ClearWave AI Pipeline** executes a structured four-stage inference workflow:
 
@@ -86,7 +97,7 @@ graph LR
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 Sovereign telemetry tracking through three core collections in MongoDB Atlas:
 
@@ -117,7 +128,7 @@ erDiagram
 
 ---
 
-## 🔎 Anatomy of the Project
+## Anatomy of the Project
 
 ```bash
 GLOSA-BHARAT/
@@ -151,17 +162,7 @@ GLOSA-BHARAT/
 
 ---
 
-## 🌟 Key Features & Solutions
-
-- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, **eliminating unintentional signal jumps**.
-- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
-- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **🛰️ Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
-
----
-
-## 🗺️ Kolkata Case Study: Girish Park to NIT Narula
+## Kolkata Case Study: Girish Park to NIT Narula
 
 > **Developer's Route**: Ashish Chaurasia | **Distance**: 8.7 km | **Junctions**: 7  
 > **Route Corridor**: Girish Park → Shyambazar 5-Point → Sinthi More → Dunlop → Agarpara
@@ -178,15 +179,15 @@ GLOSA-BHARAT/
 
 ---
 
-## 🚀 Impact & Benefits
+## Impact & Benefits
 
-- **🛡️ Legal Protection**: Prevents unnecessary e-challans by removing the "stop-go" guesswork at yellow lights.
-- **🌏 Global Ecology**: Targeted reduction in particulate matter (PM2.5) by minimizing idling.
-- **📈 Economic Gains**: Saving city-wide logistics providers 15-20% in annual fuel costs.
-- **🇮🇳 Sovereign Resilience**: 100% indigenous software stack sitting on secure Indian clouds.
+- **Legal Protection**: Prevents unnecessary e-challans by removing the "stop-go" guesswork at yellow lights.
+- **Global Ecology**: Targeted reduction in particulate matter (PM2.5) by minimizing idling.
+- **Economic Gains**: Saving city-wide logistics providers 15-20% in annual fuel costs.
+- **Sovereign Resilience**: 100% indigenous software stack sitting on secure Indian clouds.
 
 ---
 
-## 👨‍💻 Developer & Visionary
+## Developer & Visionary
 **Presented at AI UTKARSH 2026 - AI SUMMIT**   
 *Narula Institute of Technology (NiT) • Theme: Responsible AI*
