@@ -18,48 +18,52 @@
     <a href="#-live-deployments">Live Demo</a> •
     <a href="#-key-features--solutions">Features</a> •
     <a href="#-architecture-diagrams">Architecture</a> •
-    <a href="#-anatomy-of-the-project">Project Structure</a>
+    <a href="#-anatomy-of-the-project">Structure</a>
   </p>
 </div>
 
 ---
 
-## ❓ What is GLOSA BHARAT?
+## 📖 What is GLOSA BHARAT?
 
-**GLOSA BHARAT** (Green Light Optimal Speed Advisory) is a high-fidelity **Vehicle-to-Infrastructure (V2I)** ecosystem designed to eliminate urban traffic friction and fuel wastage using indigenous AI. 
+Urban commuters today sit in "stop-and-go" traffic, consuming unnecessary fuel and contributing to rising urban emissions. Traffic signals are often pre-timed, ignoring real-time vehicle density, and drivers frequently face e-challans for unintentional signal jumps due to poor visibility.
 
-It acts as a **Personal Mobility Guardian**, synchronizing your driving speed with city traffic signals. By using real-time AI perception from existing CCTV cameras, the system calculates the "Optimal Speed" you should maintain to reach a junction exactly when the signal turns green—creating a seamless **"Green Wave"** corridor that saves time, reduces fuel consumption, and prevents unnecessary signal-jump challans.
-
----
-
-## 🔗 Live Deployments
-
-| Service | URL | Platform |
-|---------|-----|----------|
-| 🌐 Frontend | [glosa-frontend.pages.dev](https://glosa-frontend.pages.dev) | Cloudflare Pages |
-| ⚙️ Backend API | [glosa-backend-68595042977.asia-south1.run.app](https://glosa-backend-68595042977.asia-south1.run.app) | Google Cloud Run |
-| 🤖 AI Service | [glosa-ai-68595042977.asia-south1.run.app](https://glosa-ai-68595042977.asia-south1.run.app) | Google Cloud Run |
+**GLOSA BHARAT** is an intelligent safety and mobility layer that connects your vehicle with city infrastructure. By building a sub-second unified view of traffic junctions, it actively prevents congestion and fuel waste before you even reach the signal.
 
 ---
 
-## 🚩 Problem Statement
+## 🚨 Problem Statement
 
-Urban centers in India face a silent economic and environmental crisis driven by traffic friction:
-- **Economic Loss**: Idling at red lights costs billions in lost productivity and fuel imports.
-- **Environmental Impact**: Vehicular "stop-and-go" patterns are a primary source of urban CO2 and PM2.5 hotspots.
-- **Unnecessary Challans**: Drivers often face automated fines (e-challans) for technical signal jumps caused by poor signal visibility or unexpected timing flips.
-- **Inflexible Infrastructure**: Current traffic signal systems are "pre-timed" and cannot adapt to real-time traffic density.
-- **Energy Insecurity**: High national fuel consumption is exacerbated by inefficient driving habits in congested corridors.
+> **The Urban Mobility Crisis**
+
+1.  **Fuel Wastage**: Constant idling at red lights significantly increases city-wide fuel dependency and financial loss.
+2.  **Unnecessary Challans**: Poor signal timing/visibility causes unintentional signal jumps, leading to legal and financial burdens.
+3.  **Static Infrastructure**: Legacy traffic lights don't adapt to real-time density, creating permanent bottlenecks in major corridors.
+
+*Result: Economic leakage, increased carbon footprint, and high-stress urban commuting.*
 
 ---
 
-## 🌟 Key Features & Solutions
+## 🎯 Objective
 
-- **🚀 Real-time Speed Advisory**: Calculates and displays the optimal speed to catch the next green light flawlessly, eliminating unintentional signal jumps.
-- **🧠 Indigenous AI Core**: Custom-trained models optimized for heterogeneous Indian traffic (Bikes, Autos, Vans).
-- **🛡️ Challan Mitigation**: Precise V2I synchronization ensures drivers are never caught in "dilemma zones," reducing unnecessary fines.
-- **📊 Digital Twin Dashboard**: A futuristic Leaflet-based GIS dashboard for traffic authorities to monitor congestion and signal health.
-- **📡 Hardware-Agnostic**: Works with existing government CCTV infrastructure—no expensive LIDAR needed.
+Build an **AI-powered mobility layer** that comprehensively connects heterogeneous traffic with signal infrastructure to:
+
+- Detect live junction density via standard CCTV feeds instantly.
+- Identify optimal speed windows to eliminate unnecessary idling.
+- Correlate vehicle telemetry with precise signal flip timings.
+- Provide a truly unified view of the traffic corridor for both drivers and authorities.
+
+➡️ **Goal: Eliminate city-wide "stop-and-go" patterns before they cause gridlock.**
+
+---
+
+## 💡 The Solution
+
+**GLOSA BHARAT** is the first platform that unites a city's traffic perception under one intelligent roof:
+
+1.  **AI-Powered WavePerception Engine**: Rapidly scans CCTV feeds via YOLOv8 for instantaneous object detection and queue indexing.
+2.  **Predictive Advisor Hub**: Uses sub-second logic to calculate the perfect KM/H to catch the "Green Wave."
+3.  **V2I Serial Bridge**: Synchronizes cloud-based AI with legacy signal controllers on the ground.
 
 ---
 
@@ -78,7 +82,6 @@ graph TD
 ```
 
 ### 🧠 AI Intelligence Pipeline
-
 ```mermaid
 graph LR
     A[CCTV Ingestion] --> B[YOLOv8 Perception]
@@ -88,7 +91,6 @@ graph LR
 ```
 
 ### 🗄️ Database Schema (MongoDB Atlas)
-
 ```mermaid
 classDiagram
     class User {
@@ -120,50 +122,13 @@ classDiagram
 
 ```bash
 GLOSA-BHARAT/
-├── ai-service/              # Python Intelligence Layer
-│   ├── main.py              # FastAPI server & route definitions
-│   ├── model_loader.py      # YOLOv8 weight loading orchestration
-│   ├── inference_logic.py   # Traffic density calculation algorithms
-│   └── requirements.txt     # Python dependency manifest
-├── backend/                 # Node.js Orchestration Tier
-│   ├── index.js             # Main server entry point
-│   ├── models/              # Mongoose schemas (Junctions, Users)
-│   ├── routes/              # API endpoints for telemetry sync
-│   └── package.json         # Backend manifest
-├── frontend/                # React Fiber Interface
-│   ├── src/
-│   │   ├── components/      # Advisory HUD & GIS Map modules
-│   │   ├── pages/           # Dashboard, Landing & Auth views
-│   │   ├── App.jsx          # Routing & State Management
-│   │   └── index.css        # Global futuristic styling
-│   ├── public/              # Static assets & GIS icons
-│   └── vite.config.js       # Vite configuration
-├── hardware/                # V2I Physical Prototype (Arduino)
-│   ├── glosa_hardware/
-│   │   └── glosa_hardware.ino # LCD/LED Signal Simulation C++ code
-│   └── serial_bridge.py      # Laptop-to-Hardware serial communicator
-├── scripts/                 # DevOps & Utility Scripts
-│   ├── seed_junctions.js    # Initializing MongoDB traffic data
-│   └── deploy_cloud.sh      # Google Cloud Run deployment automation
-└── README.md                # Multi-modal Enterprise Documentation
+├── ai-service/              # Python Intelligence Layer (FastAPI, YOLOv8)
+├── backend/                 # Node.js Orchestration Tier (Express, MongoDB)
+├── frontend/                # React Fiber Interface (GIS, D3.js Charts)
+├── hardware/                # V2I Physical Prototype (Arduino, C++)
+├── scripts/                 # DevOps & Deployment Automation
+└── README.md                # Premium Project Documentation
 ```
-
----
-
-## 🗺️ Kolkata Case Study: Girish Park to NIT Narula
-
-> **Developer's Route**: Ashish Chaurasia | **Distance**: 8.7 km | **Junctions**: 7  
-> **Route Corridor**: Girish Park → Shyambazar 5-Point → Sinthi More → Dunlop → Agarpara
-
-| # | Junction | Vehicle Density | Red Duration | Annual Fuel Waste |
-|---|----------|-----------------|--------------|-------------------|
-| 1 | Girish Park Metro | High | 120s | 1.78L Litres |
-| 2 | Shyambazar 5-Point | Very High | 160s | 3.12L Litres |
-| 3 | Sinthi More Junction | High | 130s | 1.98L Litres |
-| 4 | Dunlop Crossing | Very High | 140s | 2.67L Litres |
-| 5 | Belgharia Junction | Medium | 110s | 1.43L Litres |
-| 6 | Agarpara Medical | Medium | 115s | 1.12L Litres |
-| 7 | NIT Narula Turn | Low | 80s | 0.54L Litres |
 
 ---
 
