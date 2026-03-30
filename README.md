@@ -77,53 +77,41 @@ graph TD
     F -->|Visual Instructions| G[Unified Mobility Dashboard]
 ```
 
----
-
-## AI Intelligence Pipeline
-
-The **ClearWave AI Pipeline** executes a structured four-stage inference workflow:
+### 2. AI Intelligence Pipeline
 
 ```mermaid
 graph LR
-    A[CCTV Ingestion] -->|Frame Extraction| B[YOLOv8 Perception]
-    B -->|Object Localization| C[Analytic Logic / Queue Index]
-    C -->|Density Analysis| D[GLOSA Speed Prediction]
-    D -->|Optimization| E[Driver HUD Advisory]
-    
-    style A fill:#f96,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style E fill:#bfb,stroke:#333,stroke-width:2px
+    A[CCTV Ingestion] --> B[YOLOv8 Perception]
+    B --> C[Analytic Logic / Queue Index]
+    C --> D[GLOSA Speed Prediction]
+    D --> E[Driver HUD Advisory]
 ```
 
----
-
-## Database Schema
-
-Sovereign telemetry tracking through three core collections in MongoDB Atlas:
+### 3. Database Schema (MongoDB Atlas)
 
 ```mermaid
-erDiagram
-    junctions ||--o{ traffic_data : indexes
-    users {
+classDiagram
+    class User {
         string uid
         string email
         string displayName
         float currentLat
         float currentLng
     }
-    junctions {
-        string id PK
+    class Junction {
+        string id
         string name
         string status
         int secondsToChange
         float recommendedSpeed
     }
-    traffic_data {
-        string junction_id FK
+    class TrafficData {
+        string junction_id
         int density_index
         int throughput_count
-        timestamp timestamp
+        string timestamp
     }
+    Junction "1" -- "many" TrafficData : indexes
 ```
 
 ---
