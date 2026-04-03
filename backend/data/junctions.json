@@ -1,0 +1,23 @@
+[
+    {
+        "id": "J1",
+        "name": "Rajpath-Janpath Crossing",
+        "lat": 28.6129,
+        "lng": 77.2215,
+        "cycle_time": 60
+    },
+    {
+        "id": "J2",
+        "name": "India Gate Circle",
+        "lat": 28.6129,
+        "lng": 77.2295,
+        "cycle_time": 60
+    },
+    {
+        "id": "J3",
+        "name": "Vigyan Bhavan Jn",
+        "lat": 28.6149,
+        "lng": 77.2165,
+        "cycle_time": 60
+    }
+]

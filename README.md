@@ -139,25 +139,10 @@ Build an **AI-powered mobility layer** that comprehensively connects heterogeneo
 ## 🏗️ Architecture Diagrams
 
 ### 1. System Architecture (High-Level)
-```mermaid
-graph TD
-    A[Junction: Standard CCTV Feed] -->|Traffic Density| B[WavePerception AI Engine]
-    B -->|Density Telemetry| C[Orchestration Nexus: Node.js]
-    C -->|Signal Timing Logic| D[Advisory Logic Hub]
-    E[User: Driver / Authority HUD] -->|GPS Context| C
-    C -->|Optimal Speed Rec| F[GLOSA Interaction Layer]
-    D -->|Predictive Sync| F
-    F -->|Visual Instructions| G[Unified Mobility Dashboard]
-```
+![System Architecture Diagram](./GLOSA_System_Architecture_Pro.png)
 
 ### 🧠 AI Intelligence Pipeline
-```mermaid
-graph LR
-    A[CCTV Ingestion] --> B[YOLOv8 Perception]
-    B --> C[Analytic Logic / Queue Index]
-    C --> D[GLOSA Speed Prediction]
-    D --> E[Driver HUD Advisory]
-```
+![AI Intelligence Pipeline](./GLOSA_Architecture_Diagram.png)
 
 ---
 
