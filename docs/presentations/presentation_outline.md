@@ -9,7 +9,7 @@
 *   **Project Name:** GLOSA-BHARAT
 *   **Subtitle:** Intelligent Traffic Flow Optimization for Indian Smart Cities
 *   **Objective:** Leveraging AI to eliminate urban traffic congestion and fuel wastage.
-*   **Team Name:** [Your Team Name]
+*   TEAM NAME: [YOUR TEAM NAME]
 
 ---
 
