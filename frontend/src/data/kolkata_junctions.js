@@ -1,11 +1,11 @@
 export const KOLKATA_JUNCTIONS = [
-    { id: 'KOL-01', name: 'Girish Park Crossing', lat: 22.5857, lng: 88.3601, status: 'GREEN', secondsToChange: 15 },
-    { id: 'KOL-02', name: 'Shyambazar 5-Point Crossing', lat: 22.6015, lng: 88.3739, status: 'RED', secondsToChange: 45 },
-    { id: 'KOL-03', name: 'Chiria More', lat: 22.6247, lng: 88.3840, status: 'AMBER', secondsToChange: 4 },
-    { id: 'KOL-04', name: 'Sinthee More', lat: 22.6366, lng: 88.3854, status: 'GREEN', secondsToChange: 22 },
-    { id: 'KOL-05', name: 'Dunlop Bridge Crossing', lat: 22.6517, lng: 88.3813, status: 'RED', secondsToChange: 35 },
-    { id: 'KOL-06', name: 'Kamarhati Junction', lat: 22.6715, lng: 88.3813, status: 'GREEN', secondsToChange: 10 },
-    { id: 'KOL-07', name: 'NIT Narula (Agarpara)', lat: 22.6980, lng: 88.3768, status: 'RED', secondsToChange: 55 }
+    { id: 'KOL-01', name: 'Girish Park Crossing', lat: 22.5857, lng: 88.3601, status: 'GREEN', secondsToChange: 15, distance: 450, speedLimit: 50 },
+    { id: 'KOL-02', name: 'Shyambazar 5-Point Crossing', lat: 22.6015, lng: 88.3739, status: 'RED', secondsToChange: 45, distance: 2100, speedLimit: 50 },
+    { id: 'KOL-03', name: 'Chiria More', lat: 22.6247, lng: 88.3840, status: 'AMBER', secondsToChange: 4, distance: 4800, speedLimit: 40 },
+    { id: 'KOL-04', name: 'Sinthee More', lat: 22.6366, lng: 88.3854, status: 'GREEN', secondsToChange: 22, distance: 6200, speedLimit: 50 },
+    { id: 'KOL-05', name: 'Dunlop Bridge Crossing', lat: 22.6517, lng: 88.3813, status: 'RED', secondsToChange: 35, distance: 8100, speedLimit: 60 },
+    { id: 'KOL-06', name: 'Kamarhati Junction', lat: 22.6715, lng: 88.3813, status: 'GREEN', secondsToChange: 10, distance: 10500, speedLimit: 50 },
+    { id: 'KOL-07', name: 'NIT Narula (Agarpara)', lat: 22.6980, lng: 88.3768, status: 'RED', secondsToChange: 55, distance: 13800, speedLimit: 60 }
 ];
 
 // Helper to simulate live cycle changes

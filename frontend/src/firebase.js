@@ -12,7 +12,7 @@ const firebaseConfig = {
     measurementId: "G-CMCTHWNPGZ"
 };
 
-console.log("Initializing Firebase with Project ID:", firebaseConfig.projectId);
+// Firebase initialized for GLOSA-BHARAT
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

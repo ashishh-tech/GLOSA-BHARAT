@@ -1,0 +1,109 @@
+﻿=== PAGE 1 ===
+DEPARTMENT OF CONSTRUCTION ENGINEERING AND SRIJAN ΓÇÿ26
+PRESENTS
+DATA DRIFT
+Date of Event : 11th April, 2026
+Problem Statement
+Team member :
+01 (min.) to 02 (max.) Students from various educational institutions and
+departments of any year of study at the Undergraduate level can work
+together to form a team.
+Introduction :
+Smart energy highway systems combine clean energy, sophisticated traffic
+technologies, and highway engineering to reduce automobile emissions.
+Analysis of traffic data is used to examine patterns of vehicle movement,
+delays, and congestion that result in increased pollution and fuel use.
+Engineers can find inefficient flow circumstances and suggest intelligent
+control strategies like adaptive signals, sensor-based merge management,
+and energy-efficient infrastructure by using analytical tools on traffic
+statistics. The objective is to produce useful information that promotes
+reduced emissions and more environmentally friendly highway operations.
+The dataset provided focuses on highway traffic conditions, capturing data
+from various road segments over time. It includes key parameters such as
+vehicle count, average speed, traffic density, weather conditions
+
+=== PAGE 2 ===
+(rainfall,visibility), sand emission levels (COΓéé, NOx, PM2.5). Imagine you
+are a data analyst or graduate engineer working in the traffic management
+department of your city's municipal authority. Your task is to analyze this
+dataset to understand traffic behavior, identify congestion patterns, evaluate
+environmental impact, and derive insights that can help improve traffic flow,
+reduce emissions, and support smarter highway management decisions.
+
+=== PAGE 3 ===
+Task :
+Data Cleaning : Data cleansing is a crucial step in refining raw datasets into
+organised and pertinent entries. Within the provided dataset, the following
+unrefined entities needs to be identified :
+1. Duplicate entries : Instances where identical records appear more
+than once, which can introduce redundancy and inaccuracies in
+analysis.
+2. Blank entries : Records lacking essential information, which can
+impede comprehensive data analysis and interpretation.
+3. Spelling mistakes in some data : Incorrect spellings in the data can
+cause confusion and mistakes in understanding, which can then lead to
+errors in later analyses.
+Data Processing :
+1. Group congestion levels and compare their impact on average speed and
+emissions across road sections.
+2. Add a new feature "hour" by extracting it from the timestamp column
+and determine the peak traffic hours based on vehicle count.
+3. Add a new feature "traffic efficiency index" using speed and density
+values to evaluate road performance and identify congested segments .
+Data Analysis Any 6 out of 8 :
+1. Identify the peak traffic hour using vehicle count.
+2. Calculate average speed per road segment and find the slowest ones.
+3. Determine congestion prone zones using traffic density.
+4. Analyse CO2 emissions across congestion levels.
+5. Study the impact of rainfall on speed.
+6. Identify top 5 emission hotspots using x and y.
+7. Analyse heavy vehicles percentage vs congestion level.
+8. Identify low visibility zones and their congestion pattern
+
+=== PAGE 4 ===
+Advanced Analysis Any 3 out of 5:
+1. Analyse impact of gore points on speed and congestion.
+2. Simulate increase in EV percentage and its effect on Co2 emissions.
+3. Identify non-linear relationship between density and speed.
+4. Detect anomalies in traffic patterns.
+5. Rank road segments using traffic efficiency index.
+KPIs:
+1.Total traffic volume.
+2. Average Speed.
+3. Average Co2 emissions.
+4. Emissions per vehicle.
+5. Traffic efficiency index.
+6. Calculate the KPIs.
+Create a Dashboard:
+1. Develop an intuitive dashboard interface to consolidate and display
+key metrics and data points effectively.
+2. Utilize visualization tools to present complex information in a
+visually appealing and accessible format.
+Create a Presentation (ppt) with Insights:
+1. Construct a structured presentation that synthesizes data-driven
+insights and analysis.
+2. Highlight significant trends, patterns, and correlations discovered
+through thorough examination of the data.
+Finally, you can also extract/analyze the data and find some new insights
+which are not given in the above tasks. The fundamental intention behind
+the new findings should be such that it helps the city's traffic planning board
+to modify the existing policies.
+
+=== PAGE 5 ===
+Time :
+A total time of 2.5 hours will be provided for analysing the data, creating
+the dashboard and preparing a one-slider PPT.
+Judging criteria :
+1. Accurate data cleaning is essential for reliable analysis.
+2. Creation of required features such as hour and traffic efficiency index
+must be correctly implemented.
+3. Explore and measure as many KPIs as possible.
+4. Innovative thinking and additional insights beyond the given metrics for
+extra credit.
+5. Respond thoughtfully to judges' questions for extra points.
+6. Completing the task early may earn bonus points.
+7. Use Excel exclusively for creating your dashboard and
+calculations, ensuring consistency and accuracy.
+
+=== PAGE 6 ===
+

@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOSA-BHARAT — National Level Hackathon Presentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/black.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        /* ─── Design Tokens ─────────────────────────────────────── */
+        :root {
+            --c-bg-deep: #06080d;
+            --c-bg-card: rgba(255, 255, 255, 0.03);
+            --c-border: rgba(255, 255, 255, 0.06);
+            --c-accent-1: #3b82f6;
+            /* blue */
+            --c-accent-2: #8b5cf6;
+            /* violet */
+            --c-accent-3: #06b6d4;
+            /* cyan */
+            --c-accent-4: #f59e0b;
+            /* amber */
+            --c-accent-5: #10b981;
+            /* emerald */
+            --c-text: #e2e8f0;
+            --c-text-muted: #94a3b8;
+            --c-text-dim: #64748b;
+            --c-saffron: #FF9933;
+            --c-green: #138808;
+            --c-white: #FFFFFF;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        /* ─── Global Reset ──────────────────────────────────────── */
+        .reveal {
+            font-family: var(--font-body);
+            color: var(--c-text);
+            background: var(--c-bg-deep);
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .reveal .slides {
+            text-align: left;
+        }
+
+        .reveal .slides section {
+            padding: 40px 60px;
+        }
+
+        /* ─── Animated Background ───────────────────────────────── */
+        .reveal::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(59, 130, 246, 0.08), transparent),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139, 92, 246, 0.06), transparent),
+                radial-gradient(ellipse 50% 50% at 50% 50%, rgba(6, 182, 212, 0.04), transparent);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── Subtle Grid Overlay ───────────────────────────────── */
+        .reveal::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── Typography ────────────────────────────────────────── */
+        .reveal h1,
+        .reveal h2,
+        .reveal h3,
+        .reveal h4 {
+            font-family: var(--font-display);
+            text-transform: none;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            margin-bottom: 0;
+        }
+
+        .reveal h1 {
+            font-size: 4em;
+            font-weight: 800;
+            color: var(--c-white);
+        }
+
+        .reveal h2 {
+            font-size: 2.4em;
+            font-weight: 700;
+            color: var(--c-white);
+            margin-bottom: 8px;
+            text-shadow: none;
+        }
+
+        .reveal h3 {
+            font-size: 1.15em;
+            font-weight: 500;
+            color: var(--c-text-muted);
+            margin-top: 0;
+        }
+
+        .reveal h4 {
+            font-size: 1.05em;
+            font-weight: 600;
+            color: var(--c-white);
+            margin-bottom: 6px;
+        }
+
+        .reveal p {
+            font-size: 0.95em;
+            color: var(--c-text-muted);
+            margin: 0;
+        }
+
+        /* ─── India Tricolor Accent Bar ─────────────────────────── */
+        .tricolor-bar {
+            height: 3px;
+            background: linear-gradient(90deg, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+        }
+
+        /* ─── Slide Number ──────────────────────────────────────── */
+        .reveal .slide-number {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--c-text-dim);
+            background: transparent;
+            bottom: 24px;
+            right: 40px;
+        }
+
+        /* ─── Label / Chip ──────────────────────────────────────── */
+        .label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 100px;
+            font-size: 0.72em;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .label--blue {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .label--violet {
+            background: rgba(139, 92, 246, 0.12);
+            color: #a78bfa;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .label--cyan {
+            background: rgba(6, 182, 212, 0.12);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .label--amber {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .label--green {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* ─── Cards ─────────────────────────────────────────────── */
+        .card {
+            background: var(--c-bg-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .card__icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            margin-bottom: 16px;
+        }
+
+        .card__icon--blue {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+        }
+
+        .card__icon--violet {
+            background: rgba(139, 92, 246, 0.12);
+            color: #a78bfa;
+        }
+
+        .card__icon--cyan {
+            background: rgba(6, 182, 212, 0.12);
+            color: #22d3ee;
+        }
+
+        .card__icon--amber {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+        }
+
+        .card__icon--green {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+        }
+
+        .card__icon--rose {
+            background: rgba(244, 63, 94, 0.12);
+            color: #fb7185;
+        }
+
+        /* ─── Grid Layouts ──────────────────────────────────────── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        /* ─── Stat Metric ───────────────────────────────────────── */
+        .metric {
+            text-align: center;
+            padding: 32px 24px;
+            background: var(--c-bg-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius);
+        }
+
+        .metric__value {
+            font-family: var(--font-display);
+            font-size: 3em;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .metric__value--blue {
+            color: #60a5fa;
+        }
+
+        .metric__value--green {
+            color: #34d399;
+        }
+
+        .metric__value--violet {
+            color: #a78bfa;
+        }
+
+        .metric__value--amber {
+            color: #fbbf24;
+        }
+
+        .metric__label {
+            font-size: 0.82em;
+            color: var(--c-text-dim);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-family: var(--font-mono);
+        }
+
+        /* ─── Architecture Layer ────────────────────────────────── */
+        .arch-layer {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 18px 22px;
+            background: var(--c-bg-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .arch-layer:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .arch-layer__num {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .arch-layer__num--blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+        }
+
+        .arch-layer__num--violet {
+            background: rgba(139, 92, 246, 0.15);
+            color: #a78bfa;
+        }
+
+        .arch-layer__num--cyan {
+            background: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+        }
+
+        .arch-layer__num--amber {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .arch-layer__content {
+            flex: 1;
+        }
+
+        .arch-layer__title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1em;
+            color: var(--c-white);
+            margin-bottom: 4px;
+        }
+
+        .arch-layer__tech {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--c-text-dim);
+            margin-bottom: 6px;
+        }
+
+        .arch-layer__desc {
+            font-size: 0.82em;
+            color: var(--c-text-muted);
+        }
+
+        /* ─── Bullet List ───────────────────────────────────────── */
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .bullet-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            background: var(--c-bg-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            font-size: 0.92em;
+            color: var(--c-text);
+            transition: all 0.3s ease;
+        }
+
+        .bullet-list li:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .bullet-list li::before {
+            content: none;
+        }
+
+        .bullet-list li i {
+            color: var(--c-accent-3);
+            font-size: 1em;
+            margin-top: 2px;
+            flex-shrink: 0;
+            width: 20px;
+            text-align: center;
+        }
+
+        .bullet-list .hl {
+            color: var(--c-white);
+            font-weight: 600;
+        }
+
+        /* ─── Blockquote ────────────────────────────────────────── */
+        .bq {
+            padding: 28px 32px;
+            background: rgba(59, 130, 246, 0.04);
+            border-left: 3px solid var(--c-accent-1);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 1.15em;
+            font-weight: 400;
+            color: var(--c-text);
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .bq .hl {
+            color: #60a5fa;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .bq .green {
+            color: #34d399;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* ─── Tech Stack Pill ───────────────────────────────────── */
+        .tech-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            background: var(--c-bg-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .tech-pill:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .tech-pill i {
+            font-size: 1.5em;
+        }
+
+        .tech-pill__label {
+            font-weight: 600;
+            font-size: 0.88em;
+            color: var(--c-white);
+        }
+
+        .tech-pill__sub {
+            font-size: 0.72em;
+            color: var(--c-text-dim);
+            font-family: var(--font-mono);
+        }
+
+        /* ─── Callout Box ───────────────────────────────────────── */
+        .callout {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 20px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 0.92em;
+        }
+
+        .callout--blue {
+            background: rgba(59, 130, 246, 0.06);
+            border: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .callout--amber {
+            background: rgba(245, 158, 11, 0.06);
+            border: 1px solid rgba(245, 158, 11, 0.15);
+        }
+
+        .callout--green {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+        }
+
+        .callout--violet {
+            background: rgba(139, 92, 246, 0.06);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+
+        .callout i {
+            font-size: 1.1em;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ─── Section Divider ───────────────────────────────────── */
+        .section-head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .section-head__line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--c-border), transparent);
+        }
+
+        /* ─── Title Slide Specifics ─────────────────────────────── */
+        .title-hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 80vh;
+        }
+
+        .title-hero__eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            font-weight: 500;
+            color: var(--c-text-dim);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .title-hero h1 {
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .title-hero__sub {
+            font-size: 1.4em;
+            font-weight: 300;
+            color: var(--c-text-muted);
+            max-width: 700px;
+            line-height: 1.5;
+            margin-bottom: 36px;
+        }
+
+        .title-hero__badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .title-hero__footer {
+            font-family: var(--font-mono);
+            font-size: 0.72em;
+            color: var(--c-text-dim);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ─── Progress Bar ──────────────────────────────────────── */
+        .reveal .progress {
+            height: 2px;
+        }
+
+        .reveal .progress span {
+            background: var(--c-accent-1);
+        }
+
+        /* ─── Controls ──────────────────────────────────────────── */
+        .reveal .controls {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* ─── Roadmap Timeline ──────────────────────────────────── */
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(180deg, var(--c-accent-1), var(--c-accent-2), var(--c-accent-5));
+        }
+
+        .timeline__item {
+            position: relative;
+            padding: 14px 20px;
+            margin-bottom: 14px;
+            background: var(--c-bg-card);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius-sm);
+        }
+
+        .timeline__item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 20px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            border: 2px solid var(--c-accent-1);
+            background: var(--c-bg-deep);
+        }
+
+        .timeline__item:nth-child(2)::before {
+            border-color: var(--c-accent-2);
+        }
+
+        .timeline__item:nth-child(3)::before {
+            border-color: var(--c-accent-3);
+        }
+
+        .timeline__item:nth-child(4)::before {
+            border-color: var(--c-accent-5);
+        }
+
+        .timeline__phase {
+            font-family: var(--font-mono);
+            font-size: 0.68em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+
+        .timeline__title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1em;
+            color: var(--c-white);
+            margin-bottom: 4px;
+        }
+
+        .timeline__desc {
+            font-size: 0.82em;
+            color: var(--c-text-muted);
+        }
+
+        /* ─── Closing Slide ─────────────────────────────────────── */
+        .closing {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 80vh;
+        }
+
+        .closing h2 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .closing__contact {
+            font-family: var(--font-mono);
+            font-size: 0.78em;
+            color: var(--c-text-dim);
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .closing__contact a {
+            color: var(--c-text-dim);
+            text-decoration: none;
+        }
+
+        .closing__contact a:hover {
+            color: var(--c-accent-1);
+        }
+
+        /* ─── Remove default list bullets ───────────────────────── */
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li::before {
+            content: none;
+        }
+
+        /* ─── Spacers ───────────────────────────────────────────── */
+        .mt-sm {
+            margin-top: 16px;
+        }
+
+        .mt-md {
+            margin-top: 24px;
+        }
+
+        .mt-lg {
+            margin-top: 36px;
+        }
+
+        .mb-sm {
+            margin-bottom: 16px;
+        }
+
+        .mb-md {
+            margin-bottom: 24px;
+        }
+
+        /* ─── Animations ────────────────────────────────────────── */
+        .fragment {
+            opacity: 1 !important;
+        }
+
+        /* ─── Floating Particles (CSS only) ─────────────────────── */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particles span {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            animation: float-up linear infinite;
+        }
+
+        .particles span:nth-child(1) {
+            left: 12%;
+            animation-duration: 18s;
+            animation-delay: 0s;
+        }
+
+        .particles span:nth-child(2) {
+            left: 28%;
+            animation-duration: 22s;
+            animation-delay: 2s;
+        }
+
+        .particles span:nth-child(3) {
+            left: 45%;
+            animation-duration: 16s;
+            animation-delay: 4s;
+        }
+
+        .particles span:nth-child(4) {
+            left: 62%;
+            animation-duration: 20s;
+            animation-delay: 1s;
+        }
+
+        .particles span:nth-child(5) {
+            left: 78%;
+            animation-duration: 24s;
+            animation-delay: 3s;
+        }
+
+        .particles span:nth-child(6) {
+            left: 90%;
+            animation-duration: 19s;
+            animation-delay: 5s;
+        }
+
+        .particles span:nth-child(7) {
+            left: 5%;
+            animation-duration: 21s;
+            animation-delay: 6s;
+        }
+
+        .particles span:nth-child(8) {
+            left: 55%;
+            animation-duration: 17s;
+            animation-delay: 7s;
+        }
+
+        @keyframes float-up {
+            0% {
+                transform: translateY(110vh) scale(1);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-10vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tricolor-bar"></div>
+    <div class="particles">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ─── SLIDE 1 · TITLE ──────────────────────────────── -->
+            <section>
+                <div class="title-hero">
+                    <div class="title-hero__eyebrow">National Level Hackathon 2026</div>
+                    <h1>GLOSA-BHARAT</h1>
+                    <div class="title-hero__sub">
+                        Green Light Optimal Speed Advisory — an intelligent urban mobility ecosystem engineered for
+                        Atmanirbhar Bharat.
+                    </div>
+                    <div class="title-hero__badges">
+                        <span class="label label--blue"><i class="fas fa-microchip"></i> AI-Powered</span>
+                        <span class="label label--violet"><i class="fas fa-broadcast-tower"></i> V2I Technology</span>
+                        <span class="label label--cyan"><i class="fas fa-city"></i> Smart Cities</span>
+                        <span class="label label--green"><i class="fas fa-leaf"></i> Sustainable</span>
+                    </div>
+                    <div class="title-hero__footer">
+                        <i class="fas fa-circle" style="font-size:5px; color: var(--c-accent-5);"></i>
+                        Built for the future of Indian urban mobility
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 2 · THE PROBLEM ────────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--amber"><i class="fas fa-exclamation-triangle"></i> Problem</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Urban Traffic Crisis in India</h2>
+                <h3>A ₹1.5 lakh crore annual drain on the economy — and growing</h3>
+
+                <div class="grid-2 mt-lg">
+                    <ul class="bullet-list">
+                        <li>
+                            <i class="fas fa-rupee-sign" style="color:#fbbf24;"></i>
+                            <span><span class="hl">₹1.5 Lakh Crore</span> lost annually to traffic congestion across
+                                Indian cities</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-smog" style="color:#fb7185;"></i>
+                            <span>Vehicular <span class="hl">idling at signals</span> is a major source of urban CO₂ and
+                                PM2.5 emissions</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-gas-pump" style="color:#fbbf24;"></i>
+                            <span><span class="hl">40% fuel waste</span> in stop-and-go traffic patterns
+                                nationwide</span>
+                        </li>
+                    </ul>
+                    <ul class="bullet-list">
+                        <li>
+                            <i class="fas fa-clock" style="color:#60a5fa;"></i>
+                            <span>Average Indian commuter loses <span class="hl">200+ hours/year</span> in congested
+                                traffic</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-traffic-light" style="color:#fb7185;"></i>
+                            <span>Pre-timed signals cannot adapt to <span class="hl">real-time traffic
+                                    density</span></span>
+                        </li>
+                        <li>
+                            <i class="fas fa-exclamation-circle" style="color:#a78bfa;"></i>
+                            <span>Existing Western solutions are <span class="hl">prohibitively expensive</span> and not
+                                designed for Indian conditions</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 3 · OUR SOLUTION ───────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--blue"><i class="fas fa-lightbulb"></i> Solution</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>What is GLOSA?</h2>
+                <h3>Green Light Optimal Speed Advisory</h3>
+
+                <div class="bq mt-md">
+                    An AI system that computes the <span class="hl">optimal driving speed</span> so vehicles reach the
+                    next signal precisely when it turns <span class="green">GREEN</span> — eliminating unnecessary stops
+                    entirely.
+                </div>
+
+                <div class="grid-2 mt-lg">
+                    <div class="card">
+                        <div class="card__icon card__icon--blue"><i class="fas fa-brain"></i></div>
+                        <h4>AI-Powered Perception</h4>
+                        <p>Real-time traffic analysis using YOLOv8 computer vision on existing CCTV infrastructure</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--amber"><i class="fas fa-tachometer-alt"></i></div>
+                        <h4>Dynamic Speed Advisory</h4>
+                        <p>Precise, continuously-updated speed recommendations based on signal phase data</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--green"><i class="fas fa-leaf"></i></div>
+                        <h4>Eco-Friendly Impact</h4>
+                        <p>15–20% fuel consumption reduction by eliminating stop-start driving patterns</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--violet"><i class="fas fa-network-wired"></i></div>
+                        <h4>V2I Communication</h4>
+                        <p>Sub-second vehicle-to-infrastructure synchronization via WebSocket protocol</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 4 · SYSTEM ARCHITECTURE ────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--violet"><i class="fas fa-project-diagram"></i> Architecture</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>System Architecture</h2>
+                <h3>Four-layer enterprise design for scalability and real-time performance</h3>
+
+                <div class="mt-lg">
+                    <div class="arch-layer">
+                        <div class="arch-layer__num arch-layer__num--blue">01</div>
+                        <div class="arch-layer__content">
+                            <div class="arch-layer__title">Perception Layer</div>
+                            <div class="arch-layer__tech">YOLOv8 · OpenCV · FastAPI</div>
+                            <div class="arch-layer__desc">Real-time visual intelligence analyzing CCTV feeds for vehicle
+                                detection and queue density estimation</div>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <div class="arch-layer__num arch-layer__num--violet">02</div>
+                        <div class="arch-layer__content">
+                            <div class="arch-layer__title">Orchestration Layer</div>
+                            <div class="arch-layer__tech">Node.js · Express.js · Redis</div>
+                            <div class="arch-layer__desc">Central nervous system for data aggregation, pub/sub
+                                messaging, and sub-second routing</div>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <div class="arch-layer__num arch-layer__num--cyan">03</div>
+                        <div class="arch-layer__content">
+                            <div class="arch-layer__title">Advisory Engine</div>
+                            <div class="arch-layer__tech">ML Algorithms · Predictive Analytics</div>
+                            <div class="arch-layer__desc">Computes optimal speed: V<sub>opt</sub> = D /
+                                T<sub>green</sub> with dynamic adjustments for traffic density</div>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <div class="arch-layer__num arch-layer__num--amber">04</div>
+                        <div class="arch-layer__content">
+                            <div class="arch-layer__title">Interaction Layer</div>
+                            <div class="arch-layer__tech">React.js · Leaflet GIS · Socket.io</div>
+                            <div class="arch-layer__desc">Digital twin dashboard for traffic authorities and driver HUD
+                                interface with live signal countdown</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 5 · TECH STACK ─────────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--cyan"><i class="fas fa-code"></i> Stack</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Technology Stack</h2>
+                <h3>Production-grade, open-source technologies optimized for performance</h3>
+
+                <div class="grid-3 mt-lg">
+                    <div class="tech-pill">
+                        <i class="fab fa-python" style="color:#3776ab;"></i>
+                        <div>
+                            <div class="tech-pill__label">Python</div>
+                            <div class="tech-pill__sub">AI / ML Core</div>
+                        </div>
+                    </div>
+                    <div class="tech-pill">
+                        <i class="fas fa-robot" style="color:#a78bfa;"></i>
+                        <div>
+                            <div class="tech-pill__label">YOLOv8</div>
+                            <div class="tech-pill__sub">Object Detection</div>
+                        </div>
+                    </div>
+                    <div class="tech-pill">
+                        <i class="fab fa-node-js" style="color:#68a063;"></i>
+                        <div>
+                            <div class="tech-pill__label">Node.js</div>
+                            <div class="tech-pill__sub">Backend API</div>
+                        </div>
+                    </div>
+                    <div class="tech-pill">
+                        <i class="fab fa-react" style="color:#61dafb;"></i>
+                        <div>
+                            <div class="tech-pill__label">React.js</div>
+                            <div class="tech-pill__sub">Frontend UI</div>
+                        </div>
+                    </div>
+                    <div class="tech-pill">
+                        <i class="fas fa-database" style="color:#4db33d;"></i>
+                        <div>
+                            <div class="tech-pill__label">MongoDB</div>
+                            <div class="tech-pill__sub">Data Store</div>
+                        </div>
+                    </div>
+                    <div class="tech-pill">
+                        <i class="fas fa-map-marked-alt" style="color:#22d3ee;"></i>
+                        <div>
+                            <div class="tech-pill__label">Leaflet GIS</div>
+                            <div class="tech-pill__sub">Geospatial Maps</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px;">
+                    <span class="label label--blue">FastAPI</span>
+                    <span class="label label--violet">Socket.io</span>
+                    <span class="label label--cyan">Framer Motion</span>
+                    <span class="label label--amber">Tailwind CSS</span>
+                    <span class="label label--green">Redis</span>
+                    <span class="label label--blue">OpenCV</span>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 6 · AI CAPABILITIES ────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--violet"><i class="fas fa-brain"></i> AI Core</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Indigenous AI Engine</h2>
+                <h3>Purpose-built for Indian traffic conditions — heterogeneous, un-laned, and dense</h3>
+
+                <div class="grid-2 mt-lg">
+                    <div class="card">
+                        <div class="card__icon card__icon--amber"><i class="fas fa-motorcycle"></i></div>
+                        <h4>Heterogeneous Vehicle Detection</h4>
+                        <p>Trained on Indian vehicle types: two-wheelers, auto-rickshaws, cars, buses, and trucks</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--rose"><i class="fas fa-road"></i></div>
+                        <h4>Un-laned Traffic Support</h4>
+                        <p>Handles chaotic, non-lane-following traffic unique to Indian road conditions</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--cyan"><i class="fas fa-chart-line"></i></div>
+                        <h4>Queue Density Analysis</h4>
+                        <p>Real-time vehicle counting, tracking, and queue length estimation per approach</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--blue"><i class="fas fa-video"></i></div>
+                        <h4>CCTV-First Architecture</h4>
+                        <p>Leverages existing government surveillance infrastructure — zero new hardware cost</p>
+                    </div>
+                </div>
+
+                <div class="callout callout--amber mt-lg">
+                    <i class="fas fa-star" style="color: #fbbf24;"></i>
+                    <div>
+                        <strong style="color: var(--c-white);">Key Advantage</strong><br>
+                        <span style="color: var(--c-text-muted);">No expensive LIDAR or specialized sensors required —
+                            the system operates entirely on the government's existing CCTV network, making deployment
+                            cost near-zero.</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 7 · ATMANIRBHAR BHARAT ─────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--green"><i class="fas fa-flag"></i> Vision</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Atmanirbhar Bharat Alignment</h2>
+                <h3>A fully indigenous, sovereign technology stack designed for Indian scale</h3>
+
+                <div class="grid-3 mt-lg">
+                    <div class="card">
+                        <div class="card__icon card__icon--blue"><i class="fas fa-server"></i></div>
+                        <h4>Sovereign Infrastructure</h4>
+                        <p>100% indigenous software stack — zero foreign dependencies</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--violet"><i class="fas fa-shield-alt"></i></div>
+                        <h4>Data Sovereignty</h4>
+                        <p>All traffic telemetry processed and stored on Indian servers</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--amber"><i class="fas fa-rupee-sign"></i></div>
+                        <h4>Cost-Effective</h4>
+                        <p>10× cheaper than comparable Western traffic management systems</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--cyan"><i class="fas fa-expand-arrows-alt"></i></div>
+                        <h4>Tier 2/3 Scalable</h4>
+                        <p>Lightweight enough for smaller city deployments without major infra investment</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--green"><i class="fas fa-users"></i></div>
+                        <h4>Cultural Intelligence</h4>
+                        <p>AI models trained specifically on Indian driving behavior and road patterns</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--rose"><i class="fas fa-plug"></i></div>
+                        <h4>Smart City Ready</h4>
+                        <p>Plug-and-play integration with existing Smart City Mission infrastructure</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 8 · KEY FEATURES ───────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--blue"><i class="fas fa-star"></i> Features</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Key Platform Features</h2>
+                <h3>End-to-end intelligent traffic management with real-time response</h3>
+
+                <ul class="bullet-list mt-lg">
+                    <li>
+                        <i class="fas fa-th-large" style="color:#60a5fa;"></i>
+                        <span><span class="hl">Digital Twin Dashboard</span> — Futuristic Leaflet-based GIS interface
+                            for traffic authorities with live signal status overlay</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-bolt" style="color:#fbbf24;"></i>
+                        <span><span class="hl">Sub-Second Latency</span> — Real-time V2I communication via WebSocket for
+                            instant speed advisories to drivers</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-mobile-alt" style="color:#a78bfa;"></i>
+                        <span><span class="hl">Driver HUD Interface</span> — High-contrast, glanceable display showing
+                            optimal speed and green light countdown timer</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-cogs" style="color:#22d3ee;"></i>
+                        <span><span class="hl">Hardware Agnostic</span> — Operates without LIDAR, inductive loops, or
+                            proprietary road sensors of any kind</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-sync-alt" style="color:#34d399;"></i>
+                        <span><span class="hl">Live Signal Sync</span> — Real-time signal phase tracking with predictive
+                            green-window estimation</span>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- ─── SLIDE 9 · IMPACT METRICS ─────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--green"><i class="fas fa-chart-bar"></i> Impact</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Measurable Impact</h2>
+                <h3>Quantified outcomes from simulation and pilot data</h3>
+
+                <div class="grid-3 mt-lg">
+                    <div class="metric">
+                        <div class="metric__value metric__value--amber">15–20%</div>
+                        <div class="metric__label">Fuel Reduction</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric__value metric__value--green">95%+</div>
+                        <div class="metric__label">Advisory Accuracy</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric__value metric__value--violet">40%</div>
+                        <div class="metric__label">Reduced Idle Time</div>
+                    </div>
+                </div>
+
+                <div class="mt-lg">
+                    <h4
+                        style="color: var(--c-text-muted); font-size: 0.88em; text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--font-mono); margin-bottom: 16px;">
+                        Environmental Benefits
+                    </h4>
+                    <div class="grid-3">
+                        <div class="callout callout--green">
+                            <i class="fas fa-tree" style="color: #34d399;"></i>
+                            <span style="color: var(--c-text-muted); font-size: 0.88em;">Significant PM2.5 reduction by
+                                eliminating stop-start patterns</span>
+                        </div>
+                        <div class="callout callout--blue">
+                            <i class="fas fa-globe-asia" style="color: #60a5fa;"></i>
+                            <span style="color: var(--c-text-muted); font-size: 0.88em;">National-scale carbon footprint
+                                reduction potential</span>
+                        </div>
+                        <div class="callout callout--violet">
+                            <i class="fas fa-wind" style="color: #a78bfa;"></i>
+                            <span style="color: var(--c-text-muted); font-size: 0.88em;">Measurably cleaner air in urban
+                                corridor zones</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 10 · BUSINESS MODEL ────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--amber"><i class="fas fa-rocket"></i> Business</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Business Model & Scalability</h2>
+                <h3>Multiple revenue streams with clear path to nationwide adoption</h3>
+
+                <div class="grid-2 mt-lg">
+                    <div class="card">
+                        <div class="card__icon card__icon--blue"><i class="fas fa-building"></i></div>
+                        <h4>B2G — TMaaS</h4>
+                        <p>Traffic Monitoring as a Service for Smart City authorities with SLA-based pricing</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--violet"><i class="fas fa-handshake"></i></div>
+                        <h4>B2B Partnerships</h4>
+                        <p>Integration APIs for delivery fleets — Zomato, Swiggy, Amazon, and logistics companies</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--green"><i class="fas fa-car"></i></div>
+                        <h4>EV Integration</h4>
+                        <p>Native support for autonomous and electric vehicle fleet optimization</p>
+                    </div>
+                    <div class="card">
+                        <div class="card__icon card__icon--rose"><i class="fas fa-ambulance"></i></div>
+                        <h4>Emergency Priority</h4>
+                        <p>Priority green corridors for ambulances, fire services, and VIP motorcades</p>
+                    </div>
+                </div>
+
+                <div class="callout callout--violet mt-lg">
+                    <i class="fas fa-crosshairs" style="color: #a78bfa;"></i>
+                    <div>
+                        <strong style="color: var(--c-white);">Target Markets</strong><br>
+                        <span style="color: var(--c-text-muted);">100+ Smart Cities Mission · State Transport
+                            Corporations · Logistics Companies · EV Manufacturers</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 11 · ROADMAP ───────────────────────────── -->
+            <section>
+                <div class="section-head">
+                    <span class="label label--cyan"><i class="fas fa-route"></i> Roadmap</span>
+                    <div class="section-head__line"></div>
+                </div>
+                <h2>Future Roadmap</h2>
+                <h3>Phased expansion from pilot to nationwide deployment</h3>
+
+                <div class="grid-2 mt-lg">
+                    <div class="timeline">
+                        <div class="timeline__item">
+                            <div class="timeline__phase" style="color:#60a5fa;">Phase 2</div>
+                            <div class="timeline__title">Mobile App Integration</div>
+                            <div class="timeline__desc">Real-time advisories on Android/iOS with voice-guided navigation
+                                and push notifications</div>
+                        </div>
+                        <div class="timeline__item">
+                            <div class="timeline__phase" style="color:#a78bfa;">Phase 3</div>
+                            <div class="timeline__title">Autonomous Vehicle Support</div>
+                            <div class="timeline__desc">Native V2V protocol for self-driving cars with cooperative
+                                intersection management</div>
+                        </div>
+                        <div class="timeline__item">
+                            <div class="timeline__phase" style="color:#22d3ee;">Phase 4</div>
+                            <div class="timeline__title">Smart Toll Integration</div>
+                            <div class="timeline__desc">Seamless highway transitions with FASTag synchronization and
+                                toll-free green corridors</div>
+                        </div>
+                        <div class="timeline__item">
+                            <div class="timeline__phase" style="color:#34d399;">Phase 5</div>
+                            <div class="timeline__title">Nationwide Network</div>
+                            <div class="timeline__desc">Inter-city green corridors for long-distance commercial
+                                transport optimization</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="card mb-md">
+                            <h4 style="margin-bottom: 12px;">Vision 2030</h4>
+                            <p>Become India's default V2I infrastructure layer — deployed across 100+ cities, processing
+                                10M+ daily advisories, and reducing national fuel consumption by measurable percentage
+                                points.</p>
+                        </div>
+                        <div class="grid-2">
+                            <div class="metric">
+                                <div class="metric__value metric__value--blue" style="font-size:2.2em;">100+</div>
+                                <div class="metric__label">Cities</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric__value metric__value--green" style="font-size:2.2em;">10M+</div>
+                                <div class="metric__label">Daily Advisories</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── SLIDE 12 · CLOSING ───────────────────────────── -->
+            <section>
+                <div class="closing">
+                    <span class="label label--green mb-md"><i class="fas fa-flag"></i> Conclusion</span>
+                    <h2>GLOSA-BHARAT</h2>
+                    <h3 style="font-size: 1.3em; max-width: 700px; margin-top: 16px; color: var(--c-text-muted);">
+                        Not just a project — a blueprint for the future of Indian urban mobility.
+                    </h3>
+
+                    <div class="grid-3 mt-lg" style="max-width: 600px;">
+                        <div class="metric">
+                            <div style="font-size: 1.8em; margin-bottom: 8px;">🚀</div>
+                            <div class="metric__label">Smarter Cities</div>
+                        </div>
+                        <div class="metric">
+                            <div style="font-size: 1.8em; margin-bottom: 8px;">🌱</div>
+                            <div class="metric__label">Greener Future</div>
+                        </div>
+                        <div class="metric">
+                            <div style="font-size: 1.8em; margin-bottom: 8px;">🇮🇳</div>
+                            <div class="metric__label">Atmanirbhar</div>
+                        </div>
+                    </div>
+
+                    <h3
+                        style="margin-top: 48px; color: var(--c-white); font-size: 1.8em; font-family: var(--font-display); font-weight: 700;">
+                        Thank You
+                    </h3>
+
+                    <div class="closing__contact">
+                        <span><i class="fab fa-github"></i> github.com/ashishh-tech/GLOSA-BHARAT</span>
+                        <span><i class="fas fa-comment-dots"></i> Open for questions & live demo</span>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'fade',
+            transitionSpeed: 'slow',
+            backgroundTransition: 'none',
+            controls: true,
+            progress: true,
+            center: false,
+            slideNumber: 'c/t',
+            keyboard: true,
+            overview: true,
+            touch: true,
+            loop: false,
+            fragments: true,
+            showNotes: false,
+            autoSlide: 0,
+            autoSlideStoppable: true,
+            mouseWheel: false,
+            hideAddressBar: true,
+            previewLinks: false,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 2.0
+        });
+    </script>
+</body>
+
+</html>

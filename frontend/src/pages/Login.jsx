@@ -146,6 +146,15 @@ const Login = () => {
                         Sign in with Google
                     </button>
 
+                    {/* Developer Bypass */}
+                    <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}
+                        className="w-full mt-4 bg-orange-500 hover:bg-orange-600 text-white font-black tracking-wider uppercase text-sm py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                        🚀 Enter Demo Mode (Bypass Auth)
+                    </button>
+
                     {/* Sign Up Link */}
                     <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
                         Don't have an account?{' '}

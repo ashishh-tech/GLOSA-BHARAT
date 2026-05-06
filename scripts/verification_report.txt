@@ -1,0 +1,10 @@
+﻿python :   File "<string>", line 136
+At line:1 char:32
++ $env:PYTHONIOENCODING="utf-8"; python -c "
++                                ~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  File "<string>", line 136:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    print(f'Total Traffic Volume    : {int(df[" vehicles\].sum()):,}')
+                                              ^
+SyntaxError: unterminated string literal (detected at line 136)

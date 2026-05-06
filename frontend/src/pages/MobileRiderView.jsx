@@ -111,6 +111,17 @@ const MobileRiderView = () => {
     const prevPosRef = useRef(null);
     const prevTimeRef = useRef(null);
 
+    // ── Local traffic-light simulation (offline fallback) ─────────────────
+    // RED 30s → GREEN 25s → AMBER 5s → repeat
+    const SIM_CYCLE = [
+        { status: 'RED',   duration: 30 },
+        { status: 'GREEN', duration: 25 },
+        { status: 'AMBER', duration: 5  },
+    ];
+    const [simulatedSignal, setSimulatedSignal] = useState({ status: 'RED', seconds: 30 });
+    const simPhaseRef = useRef(0);
+    const simSecsRef  = useRef(30);
+
     /* ── Toast helper ── */
     const showToast = (msg, type = 'success') => {
         setToast({ msg, type });
@@ -122,6 +133,22 @@ const MobileRiderView = () => {
         const t = setInterval(() => setCurrentTime(new Date()), 1000);
         return () => clearInterval(t);
     }, []);
+
+    /* ── Signal simulation tick ── */
+    useEffect(() => {
+        const tick = setInterval(() => {
+            simSecsRef.current -= 1;
+            if (simSecsRef.current <= 0) {
+                simPhaseRef.current = (simPhaseRef.current + 1) % SIM_CYCLE.length;
+                simSecsRef.current = SIM_CYCLE[simPhaseRef.current].duration;
+            }
+            setSimulatedSignal({
+                status:  SIM_CYCLE[simPhaseRef.current].status,
+                seconds: simSecsRef.current,
+            });
+        }, 1000);
+        return () => clearInterval(tick);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     /* ── GPS speed tracking ── */
     // India bounding box — reject any geolocation fix outside this range.
@@ -266,8 +293,24 @@ const MobileRiderView = () => {
         }
     };
 
-    const recSpeed = advisory?.recommendedSpeed;
+    // Use live advisory OR compute from local simulation
+    const sigStatus  = advisory?.signalStatus  ?? simulatedSignal.status;
+    const sigSeconds = advisory?.secondsToChange ?? simulatedSignal.seconds;
+
+    // GLOSA speed recommendation computed from signal state
+    let recSpeed = advisory?.recommendedSpeed;
+    if (!recSpeed) {
+        if (sigStatus === 'GREEN')       recSpeed = Math.min(speedLimit, Math.max(28, Math.round(sigSeconds * 1.4)));
+        else if (sigStatus === 'AMBER')  recSpeed = 20;
+        else /* RED */                   recSpeed = Math.min(speedLimit - 5, Math.max(22, Math.round((sigSeconds / 30) * 40)));
+    }
     const distToJunction = advisory?.distance || null;
+
+    // Advisory message computed from signal
+    const advisoryMsg = advisory?.message ||
+        (sigStatus === 'GREEN'  ? `🟢 Signal GREEN for ${Math.round(sigSeconds)}s — maintain ${recSpeed} km/h to pass without stopping.`
+        : sigStatus === 'AMBER' ? `🟡 Signal turning RED in ${Math.round(sigSeconds)}s — decelerate to ${recSpeed} km/h, prepare to stop.`
+        :                        `🔴 Signal RED for ${Math.round(sigSeconds)}s — approach at ${recSpeed} km/h to arrive on GREEN.`);
 
     const navItems = [
         { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -419,7 +462,7 @@ const MobileRiderView = () => {
                                     <Gauge className="h-3 w-3 text-blue-400" />
                                     <p className="text-[8px] font-black text-blue-300 uppercase tracking-wider">Rec. Speed</p>
                                 </div>
-                                <p className="text-2xl font-black leading-none text-white">{recSpeed || '--'}</p>
+                                <p className="text-2xl font-black leading-none text-white">{recSpeed ?? '--'}</p>
                                 <p className="text-[8px] text-white/40 font-bold">km/h</p>
                             </div>
 
@@ -443,14 +486,14 @@ const MobileRiderView = () => {
                         >
                             <Brain className="h-4 w-4 text-orange-400 shrink-0" />
                             <p className="text-[10px] font-bold text-white/80 leading-tight line-clamp-2">
-                                {advisory?.message || 'Optimizing signal synchronization...'}
+                                {advisoryMsg}
                             </p>
                         </div>
                     </div>
 
                     {/* Signal Ring */}
                     <div className="flex flex-col items-center gap-2">
-                        <SignalRing status={advisory?.signalStatus} seconds={advisory?.secondsToChange} />
+                        <SignalRing status={sigStatus} seconds={sigSeconds} />
                         {distToJunction && (
                             <div className="text-center">
                                 <p className="text-[8px] font-black text-white/40 uppercase">Signal</p>
@@ -538,7 +581,7 @@ const MobileRiderView = () => {
                     {[
                         { label: 'Speed', value: `${Math.round(liveSpeed)} km/h`, color: '#22c55e' },
                         { label: 'Limit', value: `${speedLimit} km/h`, color: '#ef4444' },
-                        { label: 'Signal', value: advisory?.signalStatus || '--', color: advisory?.signalStatus === 'GREEN' ? '#22c55e' : advisory?.signalStatus === 'RED' ? '#ef4444' : '#f59e0b' },
+                        { label: 'Signal', value: sigStatus, color: sigStatus === 'GREEN' ? '#22c55e' : sigStatus === 'RED' ? '#ef4444' : '#f59e0b' },
                     ].map((s, i) => (
                         <div key={i} className="rounded-xl p-2 text-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
                             <p className="text-[7px] font-black text-white/40 uppercase mb-1">{s.label}</p>

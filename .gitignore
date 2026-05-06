@@ -1,27 +1,44 @@
-# Node.js
+# ──────────────────────────────────────────────
+# GLOSA-BHARAT — .gitignore
+# ──────────────────────────────────────────────
+
+# Dependencies
 node_modules/
+.venv/
+venv/
+env/
+
+# Build artifacts
 dist/
 build/
-.env
 
-# Python
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
-venv/
-.venv/
-env/
-.env
 
-# IDEs
+# IDE / Editor
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS junk
+# OS generated
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Presentation files (Optional, keeping them if user wants but usually they go in a docs folder)
-# *.pptx
-# *.docx
-# *.png
+# Cloudflare / Tunnel
+.wrangler/
+cloudflared.exe
+tunnel.*
+
+# Logs
+*.log
+*.err
+*.out

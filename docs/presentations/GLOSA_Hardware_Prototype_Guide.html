@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOSA-BHARAT Hardware Prototype Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a56db;
+            --primary-dark: #1e40af;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --danger: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--gray-800);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #e5e7eb;
+        }
+
+        .page {
+            background: white;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 50px 60px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin: 0 0 10px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: var(--primary-dark);
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 8px;
+            margin-top: 35px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        th {
+            background-color: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        td:last-child, th:last-child {
+            text-align: right;
+        }
+
+        .total-row {
+            font-weight: 700;
+            background-color: var(--gray-50);
+        }
+
+        .code-block {
+            background-color: var(--gray-900);
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .alert {
+            background-color: #fefce8;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+        }
+
+        .alert strong {
+            color: var(--warning);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body { background: white; }
+            .page { 
+                margin: 0; 
+                padding: 0; 
+                box-shadow: none; 
+                max-width: 100%;
+                border-radius: 0;
+            }
+            .code-block {
+                background-color: #f8f9fa;
+                color: #212529;
+                border: 1px solid #dee2e6;
+                border-left: 4px solid var(--primary);
+                white-space: pre-wrap; /* Ensure code splits pages */
+            }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="header">
+        <span class="badge">HACKATHON EDITION</span>
+        <h1 class="title">🚦 GLOSA-BHARAT Hardware Guide</h1>
+        <div class="subtitle">Complete Prototype Manual • Prepared by Ashish Chaurasia</div>
+    </div>
+
+    <h2>🛒 1. Hardware Shopping List</h2>
+    <p>Minimum budget required for the hardware prototype setup: ~₹650 to ₹900.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Item Description</th>
+                <th>Quantity</th>
+                <th>Est. Price (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Arduino Uno R3</strong> (Clone)</td>
+                <td>1</td>
+                <td>350 – 500</td>
+            </tr>
+            <tr>
+                <td><strong>16x2 LCD Display</strong> (with I2C Module)</td>
+                <td>1</td>
+                <td>150 – 200</td>
+            </tr>
+            <tr>
+                <td><strong>LEDs (5mm)</strong> - Red, Yellow, Green</td>
+                <td>1 of each</td>
+                <td>15</td>
+            </tr>
+            <tr>
+                <td><strong>220Ω Resistors</strong></td>
+                <td>3</td>
+                <td>10</td>
+            </tr>
+            <tr>
+                <td><strong>Breadboard</strong> (Half Size)</td>
+                <td>1</td>
+                <td>60 – 80</td>
+            </tr>
+            <tr>
+                <td><strong>Jumper Wires</strong> (Male-to-Male)</td>
+                <td>1 packet</td>
+                <td>50 – 70</td>
+            </tr>
+            <tr class="total-row">
+                <td colspan="2">Estimated Total Budget</td>
+                <td>₹635 – ₹875</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="alert">
+        <strong>💡 Pro Tip:</strong>
+        Usually, the USB A-to-B cable comes free inside the Arduino Uno box. You will use this to connect the Arduino directly to your laptop for power and data. No external battery needed!
+    </div>
+
+    <h2>🔌 2. Circuit Wiring Connections</h2>
+    <p>Wire the components exactly as shown below. It will take around 15-20 minutes to assemble.</p>
+    
+    <div class="code-block">
+[LED Connections]
+Pin 13 ──── 220Ω Resistor ──── RED LED (+) ──── GND
+Pin 12 ──── 220Ω Resistor ──── YELLOW LED (+) ── GND
+Pin 11 ──── 220Ω Resistor ──── GREEN LED (+) ─── GND
+
+[LCD Display Connections - only 4 wires to I2C]
+Arduino 5V  ──── LCD VCC
+Arduino GND ──── LCD GND
+Arduino A4  ──── LCD SDA (Data)
+Arduino A5  ──── LCD SCL (Clock)
+    </div>
+
+    <div class="alert">
+        <strong>⚠️ LED Polarity Warning:</strong>
+        The longer leg of the LED is Positive (+). Connect the resistor to this leg. The shorter leg is Negative (-) and connects directly to the GND line on your breadboard.
+    </div>
+
+    <div class="page-break"></div> <!-- Force page break for printing -->
+
+    <h2>🚀 3. Step-by-Step Setup Guide</h2>
+    
+    <ol>
+        <li><strong>Assemble Circuit:</strong> Place LEDs and LCD on the breadboard and connect jumpers to Arduino pins.</li>
+        <li><strong>Install Python Libraries:</strong> Open terminal and run <code>pip install pyserial requests</code>.</li>
+        <li><strong>Upload Arduino Code:</strong> 
+            <ul>
+                <li>Open <code>hardware/glosa_hardware/glosa_hardware.ino</code> in Arduino IDE.</li>
+                <li>Go to <em>Tools &rarr; Manage Libraries</em> and install <strong>LiquidCrystal I2C</strong>.</li>
+                <li>Select your Board and Port, then hit Upload.</li>
+            </ul>
+        </li>
+        <li><strong>Start Backend:</strong> Run <code>cd backend && npm start</code> in a new terminal.</li>
+        <li><strong>Start Serial Bridge:</strong> Run <code>python hardware/serial_bridge.py</code> (ensure the COM port matches your Arduino).</li>
+        <li><strong>Start Frontend:</strong> Run <code>cd frontend && npm run dev</code>.</li>
+    </ol>
+
+    <h2>🎯 4. Hackathon Presentation Script (Judges Demo)</h2>
+    <p>Use this script to confidently demonstrate your hardware integration during the evaluation:</p>
+
+    <div style="background: var(--gray-50); padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary-dark); font-style: italic; color: var(--gray-800); margin-top: 20px;">
+        <p><strong>[Intro]</strong> "Judges, what you see here is a live, working physical prototype. This Arduino-based traffic signal is dynamically communicating with our Node.js and AI backend in real-time."</p>
+        
+        <p><strong>[Action]</strong> "I am now simulating an approaching vehicle on the dashboard. Notice how the physical lights change from RED to GREEN perfectly in sync with the digital twin, while the LCD immediately provides speed advisories to the driver—saying 'Drive at 40 km/h'."</p>
+        
+        <p><strong>[Impact]</strong> "At just one junction in Kolkata like Shyambazar, over 3 Lakh liters of fuel is wasted annually due to stop-and-go delays. By scaling this low-cost hardware and our V2X communication, we reduce that wastage by 18%—with zero need for expensive LIDAR or imported sensors!"</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; font-size: 13px; color: var(--gray-700);">
+        <p>— GLOSA-BHARAT Project • Confidential Prototype Guide —</p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -40,6 +40,53 @@ import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import MapComponent from '../components/MapComponent';
 import { getLiveKolkataJunctions } from '../data/kolkata_junctions';
+import { io } from 'socket.io-client';
+import CONFIG from '../config';
+
+const socket = io(CONFIG.BACKEND_URL || 'http://localhost:5000', {
+    transports: ['websocket', 'polling'],
+    autoConnect: true,
+    reconnectionAttempts: 5,      // stop after 5 retries
+    reconnectionDelay: 3000,
+    timeout: 5000,
+    silent: true,
+});
+// Suppress console spam when backend is offline
+socket.on('connect_error', () => { /* silent — backend may be offline */ });
+socket.on('error', () => { /* silent */ });
+
+// ── Animated counter that counts up from 0 → target on mount/update ──────
+const AnimatedNumber = ({ value, className = '' }) => {
+    const raw = String(value ?? '');
+    const m = raw.match(/^([^0-9]*)([0-9,.]+)(.*)$/);
+    const prefix  = m ? m[1] : '';
+    const numStr  = m ? m[2].replace(/,/g, '') : '0';
+    const suffix  = m ? m[3] : '';
+    const target  = parseFloat(numStr) || 0;
+    const isFloat = numStr.includes('.');
+    const [curr, setCurr] = React.useState(0);
+
+    React.useEffect(() => {
+        let raf;
+        let start = null;
+        const DURATION = 1400;
+        const step = (ts) => {
+            if (!start) start = ts;
+            const p = Math.min((ts - start) / DURATION, 1);
+            const eased = 1 - Math.pow(1 - p, 4);
+            setCurr(target * eased);
+            if (p < 1) raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
+        return () => cancelAnimationFrame(raf);
+    }, [target]);
+
+    const display = isFloat
+        ? curr.toFixed(1)
+        : Math.round(curr).toLocaleString('en-IN');
+
+    return <span className={className}>{prefix}{display}{suffix}</span>;
+};
 
 const Dashboard = () => {
     // Safely handle auth context
@@ -149,45 +196,8 @@ const Dashboard = () => {
                         });
                     } catch (_) { /* silent — non-critical location sync */ }
 
-                    // If routing, update the status of junctions on the route
-                    if (routeInfo.junctions.length > 0) {
-                        try {
-                            const ids = routeInfo.junctions.map(j => j.id);
-                            const res = await axios.post('/api/route-advisory', { junctionIds: ids });
-
-                            const updatedJunctions = routeInfo.junctions.map(j => {
-                                const update = res.data.find(u => u.id === j.id);
-                                const d = Math.sqrt(Math.pow(latitude - j.lat, 2) + Math.pow(longitude - j.lng, 2)) * 111000;
-
-                                let speedRec = 40;
-                                if (update && update.status === 'RED') {
-                                    speedRec = Math.round((d / (update.secondsToChange + 2)) * 3.6);
-                                } else if (update && update.status === 'GREEN' && update.secondsToChange < 5) {
-                                    speedRec = 30;
-                                }
-
-                                return update ? {
-                                    ...j,
-                                    status: update.status,
-                                    secondsToChange: update.secondsToChange,
-                                    distance: Math.round(d),
-                                    recommendedSpeed: speedRec > 60 ? 60 : (speedRec < 15 ? 15 : speedRec)
-                                } : j;
-                            });
-
-                            setRouteInfo(prev => ({ ...prev, junctions: updatedJunctions }));
-
-                            const activeJ = updatedJunctions.find(j => j.status !== 'IDLE');
-                            if (activeJ) {
-                                setAdvisory({
-                                    junctionName: activeJ.name,
-                                    signalStatus: activeJ.status,
-                                    secondsToChange: activeJ.secondsToChange,
-                                    distance: activeJ.distance
-                                });
-                            }
-                        } catch (_) { /* silent — route advisory is non-critical */ }
-                    }
+                    // With WebSockets, we don't need to poll /api/route-advisory here anymore!
+                    // Location sync automatically continues above
                 });
             }
         };
@@ -256,49 +266,58 @@ const Dashboard = () => {
         return () => clearInterval(interval);
     }, [routeInfo.start?.name, routeInfo.destination?.name, activeTab]);
 
-    // Advisory polling — every 5s from server, smooth local countdown in between
+    // ── WebSocket Push Notifications (Replaces Polling) ──────────
     useEffect(() => {
-        if (!selectedJunction) return;
+        // When route changes, emit to server to start getting targeted push notifications
+        if (routeInfo.junctions.length > 0 || selectedJunction) {
+            socket.emit('start_navigation', {
+                junctions: routeInfo.junctions.length > 0 ? routeInfo.junctions : [selectedJunction],
+                lat: mockPosition.lat,
+                lng: mockPosition.lng
+            });
+        }
 
-        const poll = async () => {
-            try {
-                // Move mock vehicle toward junction on each poll
+        const handleGlosaUpdate = (updates) => {
+            if (!updates || updates.length === 0) return;
+
+            // Move mock vehicle toward selected junction to simulate driving visually
+            if (selectedJunction) {
                 setMockPosition(prev => ({
                     lat: prev.lat + (selectedJunction.lat - prev.lat) * 0.05,
                     lng: prev.lng + (selectedJunction.lng - prev.lng) * 0.05
                 }));
+            }
 
-                const res = await axios.post('/api/advisory', {
-                    junctionId: selectedJunction.id,
-                    lat: mockPosition.lat,
-                    lng: mockPosition.lng,
-                    timestamp: Date.now() / 1000
+            // Sync the junctions on the map
+            setRouteInfo(prev => ({
+                ...prev,
+                junctions: prev.junctions.map(j => {
+                    const up = updates.find(u => u.id === j.id);
+                    return up ? { ...j, ...up } : j;
+                })
+            }));
+
+            // Set the primary advisory for the active terminal
+            let activeJ = updates.find(u => selectedJunction && u.id === selectedJunction.id);
+            if (!activeJ) activeJ = updates.find(u => u.status !== 'IDLE') || updates[0];
+            
+            if (activeJ) {
+                setAdvisory({
+                    junctionName: activeJ.name,
+                    signalStatus: activeJ.status,
+                    secondsToChange: activeJ.secondsToChange,
+                    distance: activeJ.distance,
+                    recommendedSpeed: activeJ.recommendedSpeed
                 });
-                // Only update if we got a valid response
-                if (res.data && res.data.secondsToChange !== undefined) {
-                    setAdvisory(res.data);
-                }
-            } catch (_) {
-                // silent — AI advisory may be temporarily unavailable
             }
         };
 
-        poll(); // immediate first call
-        const pollInterval = setInterval(poll, 5000); // poll every 5s
-        return () => clearInterval(pollInterval);
-    }, [selectedJunction]); // ⚠️ intentionally omit mockPosition to avoid restart loop
+        socket.on('glosa_update', handleGlosaUpdate);
 
-    // Smooth local countdown — tick secondsToChange down every second between polls
-    useEffect(() => {
-        const tick = setInterval(() => {
-            setAdvisory(prev => {
-                if (!prev || prev.secondsToChange === undefined) return prev;
-                const next = Math.max(0, prev.secondsToChange - 1);
-                return { ...prev, secondsToChange: next };
-            });
-        }, 1000);
-        return () => clearInterval(tick);
-    }, []);
+        return () => {
+            socket.off('glosa_update', handleGlosaUpdate);
+        };
+    }, [routeInfo.junctions, selectedJunction]);
 
     // ── Local traffic-light simulation (runs when backend is offline) ──────────
     // Cycle: RED 30s → GREEN 25s → AMBER 5s → repeat
@@ -327,6 +346,23 @@ const Dashboard = () => {
         }, 1000);
         return () => clearInterval(simTick);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // ── Wall-clock signal simulation for offline fallback junctions ────────
+    const getJunctionSignal = (phaseOffset = 0) => {
+        const t = (Math.floor(currentTime.getTime() / 1000) + phaseOffset) % 60;
+        if (t < 30) return { status: 'RED',   secondsToChange: 30 - t };
+        if (t < 35) return { status: 'AMBER', secondsToChange: 35 - t };
+        return           { status: 'GREEN',  secondsToChange: 60 - t };
+    };
+
+    // Each mock junction gets its own phase offset so they don't all flip together
+    const MOCK_JUNCTION_DEFS = [
+        { name: 'Shyambazar Five-Point', phaseOffset: 0,  speedLimit: 50, distance: 320  },
+        { name: 'Girish Park Cross.',    phaseOffset: 14, speedLimit: 50, distance: 890  },
+        { name: 'Cossipore Chowk',       phaseOffset: 27, speedLimit: 40, distance: 1500 },
+        { name: 'Chitpur Junction',      phaseOffset: 41, speedLimit: 50, distance: 2200 },
+        { name: 'Baranagar T-Point',     phaseOffset: 8,  speedLimit: 60, distance: 3100 },
+    ];
 
     const statusMap = {
         'online': 'status-online',
@@ -791,16 +827,42 @@ const Dashboard = () => {
                                     );
                                 })()}
 
-                                <div className="w-full space-y-4 px-6">
-                                    <div className="bg-white/5 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-center">
-                                        <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Recommended Approach Speed</p>
-                                        <p className="text-4xl font-black">{advisory?.recommendedSpeed || '--'} <span className="text-sm font-bold opacity-60">KM/H</span></p>
-                                    </div>
-                                    <div className="bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 border-l-8 border-saffron">
-                                        <Brain className="h-6 w-6 text-navy_india shrink-0" />
-                                        <p className="text-sm font-black text-slate-900 leading-tight">{advisory?.message || "Optimizing signal synchronization..."}</p>
-                                    </div>
-                                </div>
+                                {/* ── Speed + Message (live or simulated) ── */}
+                                {(() => {
+                                    const sigStatus  = advisory?.signalStatus  ?? simulatedSignal.status;
+                                    const sigSeconds = advisory?.secondsToChange ?? simulatedSignal.seconds;
+
+                                    // Compute simulated GLOSA speed when backend isn't live
+                                    let simSpeed = advisory?.recommendedSpeed;
+                                    let simMsg   = advisory?.message;
+                                    if (!simSpeed) {
+                                        if (sigStatus === 'GREEN') {
+                                            simSpeed = Math.min(50, Math.max(28, Math.round(sigSeconds * 1.4)));
+                                            simMsg = `🟢 Signal is GREEN for ${Math.round(sigSeconds)}s — maintain ${simSpeed} km/h to pass without stopping.`;
+                                        } else if (sigStatus === 'AMBER') {
+                                            simSpeed = 20;
+                                            simMsg = `🟡 Signal turning RED in ${Math.round(sigSeconds)}s — decelerate to ${simSpeed} km/h and prepare to stop.`;
+                                        } else {
+                                            simSpeed = Math.min(38, Math.max(22, Math.round((sigSeconds / 30) * 40)));
+                                            simMsg = `🔴 Signal RED for ${Math.round(sigSeconds)}s — approach at ${simSpeed} km/h to arrive when it turns GREEN.`;
+                                        }
+                                    }
+
+                                    const speedColor = sigStatus === 'GREEN' ? 'text-green-300' : sigStatus === 'AMBER' ? 'text-amber-300' : 'text-red-300';
+
+                                    return (
+                                        <div className="w-full space-y-4 px-6">
+                                            <div className="bg-white/5 backdrop-blur-md p-4 rounded-2xl border border-white/10 text-center">
+                                                <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Recommended Approach Speed</p>
+                                                <p className={`text-4xl font-black ${speedColor}`}>{simSpeed} <span className="text-sm font-bold opacity-60">KM/H</span></p>
+                                            </div>
+                                            <div className="bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 border-l-8 border-saffron">
+                                                <Brain className="h-6 w-6 text-navy_india shrink-0" />
+                                                <p className="text-sm font-black text-slate-900 leading-tight">{simMsg}</p>
+                                            </div>
+                                        </div>
+                                    );
+                                })()}
                             </section>
 
                             <div className="gov-card border-l-4 border-green-600">
@@ -828,7 +890,7 @@ const Dashboard = () => {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase mb-1 tracking-widest">{metric.label}</p>
-                                            <h3 className="text-3xl font-black text-[var(--text-primary)]">{metric.value}</h3>
+                                            <h3 className="text-3xl font-black text-[var(--text-primary)]"><AnimatedNumber value={metric.value} /></h3>
                                         </div>
                                     </div>
                                 );
@@ -911,7 +973,7 @@ const Dashboard = () => {
                                               :           'bg-amber-600/20 border-amber-500/50'
                                             }`}>
                                                 <span className={`text-4xl font-black leading-none tabular-nums ${isRed ? 'text-red-200' : isGreen ? 'text-green-200' : 'text-amber-200'}`}>
-                                                    {Math.round(seconds)}
+                                                    <AnimatedNumber value={Math.round(seconds)} />
                                                 </span>
                                                 <span className="text-[9px] font-black uppercase tracking-widest opacity-70 mt-1">SECONDS</span>
                                                 <span className={`text-[10px] font-black uppercase mt-1 ${isRed ? 'text-red-400' : isGreen ? 'text-green-400' : 'text-amber-400'}`}>{status}</span>
@@ -954,14 +1016,14 @@ const Dashboard = () => {
                                                 <div className="text-right">
                                                     <p className="text-[9px] font-black text-slate-500 uppercase leading-none mb-1">Time to Flip</p>
                                                     <p className={`text-lg font-black leading-none ${rj.status === 'GREEN' ? 'text-green-600' : rj.status === 'RED' ? 'text-red-600' : 'text-amber-500'}`}>
-                                                        {Math.round(rj.secondsToChange || 0)}s
+                                                        <AnimatedNumber value={Math.round(rj.secondsToChange || 0)} />s
                                                     </p>
                                                 </div>
 
                                                 <div className="bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm min-w-[100px]">
                                                     <p className="text-[9px] font-black text-blue-500 uppercase leading-none mb-1">Opt. Speed</p>
                                                     <p className="text-lg font-black text-navy dark:text-blue-400 leading-none">
-                                                        {rj.recommendedSpeed} <span className="text-[10px] opacity-60">KM/H</span>
+                                                        <AnimatedNumber value={rj.recommendedSpeed} /> <span className="text-[10px] opacity-60">KM/H</span>
                                                     </p>
                                                 </div>
                                             </div>
@@ -974,7 +1036,7 @@ const Dashboard = () => {
                                 <p className="text-[10px] font-black text-blue-300 uppercase tracking-[0.2em] mb-4">GLOSA Recommendation</p>
                                 <div className="flex items-center justify-between mb-6">
                                     <span className="text-sm font-bold opacity-80 text-blue-50">Target Speed</span>
-                                    <span className="text-4xl font-black text-saffron">{advisory?.recommendedSpeed || '--'} <small className="text-xs opacity-60">KM/H</small></span>
+                                    <span className="text-4xl font-black text-saffron"><AnimatedNumber value={advisory?.recommendedSpeed || 0} /> <small className="text-xs opacity-60">KM/H</small></span>
                                 </div>
                                 <div className="bg-white/10 p-4 rounded-xl border border-white/10 flex items-start gap-3">
                                     <Brain className="h-5 w-5 text-saffron shrink-0" />
@@ -1003,25 +1065,36 @@ const Dashboard = () => {
                         const etaMins = Math.round(parseFloat(routeDistKm) / 40 * 60) || 12;
                         const fuelSaved = (parseFloat(routeDistKm) * 0.04).toFixed(1) || '0.3';
 
-                        // Mock junction rows when backend is offline
-                        const displayJunctions = junctions.length > 0 ? junctions : [
-                            { name: 'Shyambazar 5-Point',   distance: 320,  status: 'RED',   secondsToChange: 22, recommendedSpeed: 35, speedLimit: 50 },
-                            { name: 'Girish Park Cross.',   distance: 890,  status: 'GREEN', secondsToChange: 14, recommendedSpeed: 48, speedLimit: 50 },
-                            { name: 'Cossipore Chowk',      distance: 1500, status: 'AMBER', secondsToChange: 5,  recommendedSpeed: 30, speedLimit: 40 },
-                            { name: 'Chitpur Junction',     distance: 2200, status: 'GREEN', secondsToChange: 28, recommendedSpeed: 50, speedLimit: 50 },
-                            { name: 'Baranagar T-Point',    distance: 3100, status: 'RED',   secondsToChange: 31, recommendedSpeed: 32, speedLimit: 60 },
-                        ];
+                        // Live junction display — real backend OR clock-based simulation
+                        const displayJunctions = junctions.length > 0
+                            ? junctions
+                            : MOCK_JUNCTION_DEFS.map(j => {
+                                const sig = getJunctionSignal(j.phaseOffset);
+                                let rec = 40;
+                                if (sig.status === 'GREEN')  rec = Math.min(j.speedLimit, 50);
+                                else if (sig.status === 'AMBER') rec = 20;
+                                else {
+                                    const distKm = j.distance / 1000;
+                                    const tGreen = sig.secondsToChange;
+                                    rec = Math.min(j.speedLimit - 5, Math.max(20, Math.round(distKm / (tGreen / 3600))));
+                                }
+                                return { ...j, ...sig, recommendedSpeed: rec };
+                            });
 
                         const speedLimitForJunction = (j) => j.speedLimit || 50;
 
-                        // Congestion segments (mock if no route)
+                        // Live sinusoidal congestion — updates smoothly every render (driven by currentTime)
+                        const _t = currentTime.getTime() / 1000;
                         const segments = [
-                            { label: 'Segment 1', load: 28,  color: '#22c55e' },
-                            { label: 'Segment 2', load: 55,  color: '#f59e0b' },
-                            { label: 'Segment 3', load: 82,  color: '#ef4444' },
-                            { label: 'Segment 4', load: 41,  color: '#22c55e' },
-                            { label: 'Segment 5', load: 67,  color: '#f97316' },
-                        ];
+                            { label: 'BT Road North',    load: Math.round(Math.min(95, Math.max(10, 28 + Math.sin(_t / 45 + 0) * 10))) },
+                            { label: 'Circular Road',    load: Math.round(Math.min(95, Math.max(10, 55 + Math.sin(_t / 38 + 1) * 12))) },
+                            { label: 'VIP Road Stretch', load: Math.round(Math.min(95, Math.max(10, 82 + Math.sin(_t / 52 + 2) *  8))) },
+                            { label: 'Park Street Seg',  load: Math.round(Math.min(95, Math.max(10, 41 + Math.sin(_t / 41 + 3) * 11))) },
+                            { label: 'EM Bypass',        load: Math.round(Math.min(95, Math.max(10, 67 + Math.sin(_t / 35 + 4) *  9))) },
+                        ].map(s => ({
+                            ...s,
+                            color: s.load > 75 ? '#ef4444' : s.load > 50 ? '#f97316' : '#22c55e'
+                        }));
 
                         return (
                             <div className="space-y-6 mt-2">
@@ -1101,11 +1174,11 @@ const Dashboard = () => {
                                                                 </td>
                                                                 <td className="px-4 py-3">
                                                                     <div className={`flex items-center gap-1 text-[10px] font-black ${optSpd <= limit * 0.7 ? 'text-orange-500' : 'text-blue-600 dark:text-blue-400'}`}>
-                                                                        {optSpd} <span className="opacity-60 font-bold">km/h</span>
+                                                                        <AnimatedNumber value={optSpd} /> <span className="opacity-60 font-bold">km/h</span>
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-4 py-3 text-xs font-black text-[var(--text-primary)]">
-                                                                    {Math.round(j.secondsToChange || 0)}s
+                                                                    <AnimatedNumber value={Math.round(j.secondsToChange || 0)} />s
                                                                 </td>
                                                                 <td className="px-4 py-3 text-[10px] font-black whitespace-nowrap">{action}</td>
                                                             </tr>
@@ -1127,7 +1200,7 @@ const Dashboard = () => {
                                                     <div key={i}>
                                                         <div className="flex justify-between text-[9px] font-black uppercase mb-1">
                                                             <span className="text-[var(--text-secondary)]">{seg.label}</span>
-                                                            <span style={{ color: seg.color }}>{seg.load}%</span>
+                                                            <span style={{ color: seg.color }}><AnimatedNumber value={seg.load} />%</span>
                                                         </div>
                                                         <div className="h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">
                                                             <div
@@ -1215,7 +1288,7 @@ const Dashboard = () => {
                                         </div>
                                     </div>
                                     <p className="text-[11px] font-black text-slate-500 uppercase mb-1 tracking-widest">{metric.label}</p>
-                                    <h3 className="text-4xl font-black">{metric.value}</h3>
+                                    <h3 className="text-4xl font-black"><AnimatedNumber value={metric.value} /></h3>
                                 </div>
                             );
                         })}
@@ -1224,25 +1297,33 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div className="gov-card p-8 min-h-[300px] flex flex-col justify-center border-t-4 border-t-saffron">
                             <h3 className="text-sm font-black uppercase tracking-widest mb-6 border-b border-slate-100 dark:border-white/10 pb-2">AI Optimization Impact</h3>
-                            <div className="space-y-6">
-                                <div>
-                                    <div className="flex justify-between text-xs font-black uppercase mb-2">
-                                        <span>Wait Time Reduction</span>
-                                        <span className="text-green-600">88% Effectiveness</span>
-                                    </div>
-                                    <div className="h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                        <div className="h-full bg-green-500 w-[88%]" />
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex justify-between text-xs font-black uppercase mb-2">
-                                        <span>Fuel Savings</span>
-                                        <span className="text-blue-600">74% Target</span>
-                                    </div>
-                                    <div className="h-3 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
-                                        <div className="h-full bg-blue-500 w-[74%]" />
-                                    </div>
-                                </div>
+                            <div className="space-y-5">
+                                {(() => {
+                                    const accuracy = parseFloat((trafficMetrics.find(m => m.icon === 'Brain')?.value || '98.7').replace('%','')) || 98.7;
+                                    const stopRed  = parseFloat((trafficMetrics.find(m => m.icon === 'Clock' || m.label?.includes('Stop') || m.label?.includes('Wait'))?.value || '31.4').replace('%','')) || 31.4;
+                                    const fuelVal  = parseFloat((trafficMetrics.find(m => m.icon === 'TrendingUp')?.value || '185').replace(/[^0-9.]/g,'')) || 185;
+                                    const vehVal   = parseFloat((trafficMetrics.find(m => m.icon === 'Users')?.value || '1480').replace(/[^0-9]/g,'')) || 1480;
+                                    const bars = [
+                                        { label: 'AI Signal Accuracy',  pct: Math.min(100, accuracy),                 display: `${accuracy.toFixed(1)}%`,  grad: 'from-emerald-400 to-green-600',  text: 'text-emerald-600 dark:text-emerald-400' },
+                                        { label: 'Stop Time Reduction', pct: Math.min(100, stopRed * 2.8),            display: `${stopRed.toFixed(1)}%`,   grad: 'from-blue-400 to-blue-600',      text: 'text-blue-600 dark:text-blue-400'    },
+                                        { label: 'Daily Fuel Saved',    pct: Math.min(100, (fuelVal / 250) * 100),   display: `${fuelVal}L`,              grad: 'from-violet-400 to-violet-600',  text: 'text-violet-600 dark:text-violet-400'},
+                                        { label: 'Vehicle Throughput',  pct: Math.min(100, (vehVal / 2000) * 100),   display: vehVal.toLocaleString('en-IN'), grad: 'from-amber-400 to-orange-500', text: 'text-amber-600 dark:text-amber-400'  },
+                                    ];
+                                    return bars.map(({ label, pct, display, grad, text }, i) => (
+                                        <div key={i}>
+                                            <div className="flex justify-between text-xs font-black uppercase mb-2">
+                                                <span>{label}</span>
+                                                <span className={text}>{display}</span>
+                                            </div>
+                                            <div className="h-2 bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full bg-gradient-to-r ${grad} transition-all duration-1000`}
+                                                    style={{ width: `${pct.toFixed(1)}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ));
+                                })()}
                             </div>
                         </div>
                         <div className="gov-card p-8 min-h-[300px] flex flex-col items-center justify-center border-t-4 border-t-navy bg-slate-50/50 dark:bg-white/0">
@@ -1424,17 +1505,27 @@ const Dashboard = () => {
                         {/* Demand Heatmap */}
                         <div className="lg:col-span-2 gov-card">
                             <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.3em] mb-6">Hourly Demand Heatmap</h3>
-                            <div className="flex items-end gap-1.5" style={{ height: '160px' }}>
-                                {grid.map((slot, i) => (
-                                    <div key={i} className="flex-1 flex flex-col items-end justify-end">
-                                        <div
-                                            className={`w-full rounded-t-sm ${demandColor[slot.mode] || 'bg-slate-400'} transition-all`}
-                                            style={{ height: `${Math.round(slot.demand * 1.4)}px`, minHeight: '4px' }}
-                                            title={`${slot.hour}: ${slot.demand}% demand`}
-                                        />
-                                        <p className="text-[8px] font-black text-[var(--text-secondary)] mt-1">{slot.hour.split(':')[0]}</p>
-                                    </div>
-                                ))}
+                            <div className="flex items-end gap-1" style={{ height: '160px' }}>
+                                {grid.map((slot, i) => {
+                                    const slotHr = parseInt(slot.hour.split(':')[0], 10);
+                                    const nowHr  = currentTime.getHours();
+                                    const isCurrent = slotHr === nowHr;
+                                    return (
+                                        <div key={i} className={`flex-1 flex flex-col items-center justify-end relative ${isCurrent ? 'z-10' : ''}`}>
+                                            {isCurrent && (
+                                                <div className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 text-[9px] font-black text-blue-500 whitespace-nowrap">NOW</div>
+                                            )}
+                                            <div
+                                                className={`w-full rounded-t-sm transition-all duration-700 ${isCurrent ? 'demand-bar-current' : ''} ${demandColor[slot.mode] || 'bg-slate-400'}`}
+                                                style={{ height: `${Math.round(slot.demand * 1.4)}px`, minHeight: '4px', opacity: isCurrent ? 1 : 0.72 }}
+                                                title={`${slot.hour}: ${slot.demand}% demand`}
+                                            />
+                                            <p className={`text-[8px] font-black mt-1 ${isCurrent ? 'text-blue-500' : 'text-[var(--text-secondary)]'}`}>
+                                                {slot.hour.split(':')[0]}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
                             </div>
                             <div className="flex gap-4 mt-4">
                                 {[['peak', 'bg-red-500'], ['high', 'bg-orange-500'], ['medium', 'bg-amber-400'], ['low', 'bg-green-500']].map(([l, c]) => (
