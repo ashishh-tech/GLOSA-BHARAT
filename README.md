@@ -1,6 +1,6 @@
 # 🚦 GLOSA-BHARAT 2.0: Intelligent Urban Mobility Ecosystem
 
-[![Atmanirbhar Bharat](https://img.shields.io/badge/Initiative-Atmanirbhar%20Bharat-orange.svg)](https://www.india.gov.in/spotlight/atmanirbhar-bharat)
+[![Smart Mobility](https://img.shields.io/badge/Initiative-Smart%20Mobility-orange.svg)](#-key-features)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tech Stack](https://img.shields.io/badge/Stack-Fullstack%20AI-blue.svg)](#-tech-stack)
 [![Frontend](https://img.shields.io/badge/Live%20Frontend-Cloudflare%20Pages-F6821F?logo=cloudflare)](https://glosa-frontend.pages.dev)
@@ -198,4 +198,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Developed for the **AI for Atmanirbhar Bharat Seminar 2026**.
+Developed for the **Smart Mobility Innovation Seminar 2026**.
