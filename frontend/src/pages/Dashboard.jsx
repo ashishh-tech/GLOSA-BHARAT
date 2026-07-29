@@ -604,10 +604,9 @@ const Dashboard = () => {
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4 py-6">
                         <div>
                             <div className="flex items-center gap-4 mb-2">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="GOI" className="h-12 dark:invert opacity-80" />
                                 <h1 className="text-4xl font-black text-[var(--text-primary)] tracking-tight">GLOSA Control Center</h1>
                             </div>
-                            <p className="text-[var(--text-secondary)] font-bold text-base uppercase tracking-wider">National Smart Mobility Framework • New Delhi Pilot</p>
+                            <p className="text-[var(--text-secondary)] font-bold text-base uppercase tracking-wider">Smart Mobility Framework • New Delhi Pilot</p>
                         </div>
 
                         {/* Google Maps Style Search Card */}
@@ -1800,9 +1799,8 @@ const Dashboard = () => {
                             className="bg-white dark:bg-slate-900 w-full max-w-md rounded-[2.5rem] shadow-2xl p-10 border-t-8 border-saffron"
                         >
                             <div className="text-center mb-8">
-                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="GOI" className="h-16 mx-auto mb-6 dark:invert" />
                                 <h1 className="text-3xl font-black text-navy dark:text-blue-400 tracking-tight mb-2">GLOSA BHARAT</h1>
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">National Smart Mobility Gateway</p>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Smart Mobility Gateway</p>
                             </div>
 
                             <form onSubmit={handleLogin} className="space-y-6">

@@ -15,7 +15,7 @@ const WhitepaperModal = ({ isOpen, onClose }) => {
                         </div>
                         <div>
                             <h2 className="text-xl font-bold text-slate-800">Project Whitepaper</h2>
-                            <p className="text-xs text-[var(--green)] font-bold uppercase tracking-widest">Version 1.0.4 | Atmanirbhar Bharat Initiative</p>
+                            <p className="text-xs text-[var(--green)] font-bold uppercase tracking-widest">Version 1.0.4 | Smart Mobility Initiative</p>
                         </div>
                     </div>
                     <button

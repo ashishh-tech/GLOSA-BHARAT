@@ -27,10 +27,7 @@ const LandingPage = () => {
 
     return (
         <div className="bg-[var(--bg-primary)] min-h-screen font-sans selection:bg-blue-100 selection:text-blue-900 transition-colors duration-300 relative overflow-hidden">
-            {/* Indian Theme Background Elements */}
-            <div className="chakra-bg" />
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-white to-green-600 opacity-50 z-[60]" />
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-white to-green-600 opacity-50 z-[60]" />
+
 
             <WhitepaperModal isOpen={isWhitepaperOpen} onClose={() => setIsWhitepaperOpen(false)} />
 
@@ -38,21 +35,19 @@ const LandingPage = () => {
             <nav className="fixed top-0 w-full z-50 bg-[var(--bg-card)]/80 backdrop-blur-xl border-b border-[var(--border-color)] px-6 py-4">
                 <div className="max-w-7xl mx-auto flex justify-between items-center">
                     <div className="flex items-center gap-3">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="GOI" className="h-10 dark:invert" />
-                        <div className="h-8 w-px bg-[var(--border-color)] mx-1"></div>
                         <div>
                             <h1 className="text-xl font-black text-[var(--text-primary)] leading-none tracking-tight">
                                 <span className="text-saffron">GLOSA</span>
                                 <span className="text-navy dark:text-white">-</span>
                                 <span className="text-green">BHARAT</span>
                             </h1>
-                            <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-secondary)] font-bold mt-1">Government of India Initiative</p>
+                            <p className="text-[9px] uppercase tracking-[0.2em] text-[var(--text-secondary)] font-bold mt-1">Smart Mobility Platform</p>
                         </div>
                     </div>
 
                     <div className="hidden md:flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-[var(--text-secondary)]">
-                        <a href="#" className="hover:text-saffron transition-colors border-b-2 border-transparent hover:border-saffron pb-1">Atmanirbhar Bharat</a>
-                        <a href="#" className="hover:text-green transition-colors border-b-2 border-transparent hover:border-green pb-1">Digital India</a>
+                        <a href="#" className="hover:text-saffron transition-colors border-b-2 border-transparent hover:border-saffron pb-1">About GLOSA</a>
+                        <a href="#" className="hover:text-green transition-colors border-b-2 border-transparent hover:border-green pb-1">Technology</a>
                         <div className="flex items-center gap-4 border-l border-[var(--border-color)] pl-8">
                             <button
                                 onClick={() => setIsDarkMode(!isDarkMode)}
@@ -82,7 +77,7 @@ const LandingPage = () => {
                     >
                         <div className="inline-flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 px-4 py-1.5 rounded-full mb-6 border border-orange-100 dark:border-orange-900/30">
                             <Trophy className="h-3 w-3 text-orange-600" />
-                            <span className="text-[10px] font-black text-orange-700 dark:text-orange-400 uppercase tracking-widest">Atmanirbhar Bharat Initiative</span>
+                            <span className="text-[10px] font-black text-orange-700 dark:text-orange-400 uppercase tracking-widest">Smart Mobility Initiative</span>
                         </div>
 
                         <h1 className="text-6xl md:text-8xl font-black text-[var(--text-primary)] leading-[1.05] mb-8 tracking-tighter">
@@ -92,7 +87,7 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="text-xl text-[var(--text-secondary)] font-bold max-w-xl mb-10 leading-relaxed border-l-4 border-saffron pl-6">
-                            Implementing the National GLOSA Framework for optimized traffic flow. Built to strengthen the <span className="text-saffron italic">Atmanirbhar</span> vision.
+                            Implementing the GLOSA Framework for optimized traffic flow. Built to strengthen the <span className="text-saffron italic">smart mobility</span> vision.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 mb-20 text-center">
@@ -101,10 +96,7 @@ const LandingPage = () => {
                             </Link>
                         </div>
 
-                        <div className="flex items-center gap-12 opacity-40 grayscale dark:invert dark:opacity-60">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Aatmanirbhar_Bharat_Logo.png" alt="Make in India" className="h-12" />
-                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Digital_India_logo.svg/1200px-Digital_India_logo.svg.png" alt="Digital India" className="h-10" />
-                        </div>
+
                     </motion.div>
 
                     <motion.div
@@ -189,14 +181,9 @@ const LandingPage = () => {
             {/* Footer */}
             <footer className="bg-[var(--bg-card)] py-12 px-6 border-t border-[var(--border-color)] text-center">
                 <div className="flex flex-col items-center gap-6">
-                    <div className="flex items-center gap-2 opacity-50 grayscale hover:opacity-100 hover:grayscale-0 transition-all cursor-pointer dark:invert">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" alt="India Emblem" className="h-10" />
-                        <div className="h-8 w-px bg-slate-300 mx-1"></div>
-                        <span className="text-xs font-black text-[var(--text-primary)] uppercase tracking-widest">Ministry of Smart Cities</span>
-                    </div>
                     <p className="text-xs text-[var(--text-secondary)] font-bold max-w-lg mx-auto">
-                        Developed as part of the National Mobility Initiative.
-                        © 2026 Smart Infrastructure India. All rights reserved.
+                        Developed as part of the Smart Mobility Initiative.
+                        © 2026 GLOSA-BHARAT. All rights reserved.
                     </p>
                 </div>
             </footer>

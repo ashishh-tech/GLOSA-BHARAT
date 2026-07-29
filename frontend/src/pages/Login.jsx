@@ -50,11 +50,6 @@ const Login = () => {
                 {/* Logo and Header */}
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-3 mb-4">
-                        <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
-                            alt="GOI"
-                            className="h-12 dark:invert"
-                        />
                         <div>
                             <h1 className="text-2xl font-black leading-none">
                                 <span className="text-orange-600">GLOSA</span>
@@ -62,7 +57,7 @@ const Login = () => {
                                 <span className="text-green-600">BHARAT</span>
                             </h1>
                             <p className="text-[8px] uppercase tracking-widest text-slate-500 font-bold mt-1">
-                                Government of India Initiative
+                                Smart Mobility Platform
                             </p>
                         </div>
                     </div>

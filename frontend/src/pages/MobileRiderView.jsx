@@ -370,7 +370,6 @@ const MobileRiderView = () => {
 
                 {/* Brand */}
                 <div className="flex items-center gap-2">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" className="h-7 invert opacity-80" alt="GOI" />
                     <div>
                         <p className="text-xs font-black leading-none" style={{ color: '#FF9933' }}>GLOSA</p>
                         <p className="text-[9px] font-black leading-none text-blue-400">BHARAT</p>
@@ -551,7 +550,6 @@ const MobileRiderView = () => {
                 {/* Sidebar header */}
                 <div className="flex items-center justify-between px-5 py-5 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                     <div className="flex items-center gap-3">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" className="h-9 invert opacity-80" alt="GOI" />
                         <div>
                             <p className="text-lg font-black leading-none" style={{ color: '#FF9933' }}>GLOSA</p>
                             <p className="text-xs font-black leading-none text-blue-400">BHARAT</p>

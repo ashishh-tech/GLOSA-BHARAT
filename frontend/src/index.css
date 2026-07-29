@@ -37,8 +37,7 @@
   --text-on-navy: #ffffff;
   --border-color: var(--outline);
   --bg-hover: var(--surface-2);
-  --chakra-opacity: 0.04;
-  --chakra-filter: invert(15%) sepia(95%) saturate(3000%) hue-rotate(200deg);
+
   --saffron-text: #E67E22;
   --green-text: #138808;
   --navy-text: #1a237e;
@@ -68,8 +67,7 @@
   --text-on-navy: #f8fafc;
   --border-color: var(--outline);
   --bg-hover: var(--surface-3);
-  --chakra-opacity: 0.10;
-  --chakra-filter: brightness(2) saturate(0);
+
   --saffron-text: #f97316;
   --green-text: #22c55e;
   --navy-text: #60a5fa;
@@ -268,21 +266,7 @@ body {
 .animate-pulse-glow { animation: pulse-glow 2s infinite; }
 .animate-slide-right { animation: slide-in-right 0.3s cubic-bezier(0.4,0,0.2,1) both; }
 
-/* ══ Chakra Background ═══════════════════════════════════════════════════════ */
-.chakra-bg {
-  background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/17/Ashoka_Chakra.svg');
-  background-repeat: no-repeat;
-  background-position: center;
-  opacity: var(--chakra-opacity);
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 900px; height: 900px;
-  z-index: 0;
-  pointer-events: none;
-  animation: rotate-chakra 180s linear infinite;
-  filter: var(--chakra-filter);
-}
+/* ══ Chakra Background (removed) ════════════════════════════════════════════ */
 
 /* ══ Skeleton Loading ════════════════════════════════════════════════════════ */
 .skeleton {
